@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useAuthStore } from "../store/authStore";
 import {
   AiOutlineUser,
@@ -9,15 +10,21 @@ import {
   AiOutlineFileText,
   AiFillWechatWork,
   AiOutlineSearch,
-  
 } from "react-icons/ai";
-import { MdOutlineCleaningServices } from "react-icons/md";
+import { HiOutlineUsers } from "react-icons/hi";
 import { CgProfile } from "react-icons/cg";
 import { PiNetwork } from "react-icons/pi";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FcLike } from "react-icons/fc";
 import { LiaUserLockSolid } from "react-icons/lia";
 import { BsChatSquareDots } from "react-icons/bs";
+import {
+  MdOutlineCleaningServices,
+  MdOutlineOndemandVideo,
+  MdOutlineVideoLibrary,
+  MdWorkspacePremium,
+} from "react-icons/md";
+
 import logo from "../assets/musk.jpeg";
 
 const Navbar = () => {
@@ -31,26 +38,31 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-blue-500 p-2">
+      <nav className="bg-zinc-700 p-2 sticky top-0 ">
         <div className="flex justify-between items-center">
           {user && (
             <div className="relative">
-              <img
-                src={logo}
-                className="menu-item w-10 h-10 md:w-12 md:h-12 lg:w-12 lg:h-12 rounded-full cursor-pointer"
-                alt=""
-                onClick={toggleSubmenu}
-              />
+              <div className="flex p-1">
+                <img
+                  src={logo}
+                  className="menu-item w-10 h-10 md:w-12 md:h-12 lg:w-12 lg:h-12 rounded-full cursor-pointer"
+                  alt={logo}
+                  onClick={toggleSubmenu}
+                />
+                <p className="text-zinc-200 font-semi-bold self-center px-5">
+                  Hello {user.name}
+                </p>
+              </div>
               {submenuOpen && (
                 <ul className="sub-menu absolute mt-2 rounded-md shadow-lg bg-white border-2 border-blue-500 left-0">
                   <li className="p-2">
                     <Link
-                      to="/profile"
+                      to={`/profile/${user._id}`}
                       onClick={toggleSubmenu}
                       className="text-center flex items-center "
                     >
                       <CgProfile className="mr-1" />
-                      Profile
+                      View Profile
                     </Link>
                   </li>
                   <li className="p-2">
@@ -87,7 +99,7 @@ const Navbar = () => {
                   <li className="text-white self-center p-4">
                     <button
                       onClick={logout}
-                      className="flex items-center bg-red-500 hover:bg-red-400 rounded-md p-1"
+                      className="border-2 border-red-700 text-red-800 flex items-center bg-red-300 hover:bg-red-400 rounded-md p-1"
                     >
                       <AiOutlineLogout className="mr-2" /> Logout
                     </button>
@@ -136,17 +148,27 @@ const Navbar = () => {
                     </li>
                     <li className="text-white self-center">
                       <Link to="/" className="flex items-center">
-                        <AiOutlineHome className="mr-1"/> Home
+                        <AiOutlineHome className="mr-1" /> Home
                       </Link>
                     </li>
                     <li className="text-white self-center">
                       <Link to="/posts" className="flex items-center">
-                        <AiOutlineFileText className="mr-1"/> My Posts
+                        <AiOutlineFileText className="mr-1" /> My Posts
+                      </Link>
+                    </li>
+                    <li className="text-white self-center">
+                      <Link to="/myvideo" className="flex items-center">
+                        <MdOutlineOndemandVideo className="mr-1" /> My Videos
+                      </Link>
+                    </li>
+                    <li className="text-white self-center">
+                      <Link to="/videoposts" className="flex items-center">
+                        <MdOutlineVideoLibrary className="mr-1" /> Videos
                       </Link>
                     </li>
                     <li className="text-white self-center">
                       <Link to="/addwork" className="flex items-center">
-                        <AiOutlineFileText className="mr-1"/> Add Work
+                        <MdWorkspacePremium className="mr-1" /> Add Work
                       </Link>
                     </li>
                   </>
@@ -160,8 +182,14 @@ const Navbar = () => {
                       </Link>
                     </li>
                     <li className="text-white self-center">
+                      <Link to="/users" className="flex items-center">
+                        <HiOutlineUsers className="mr-1" />
+                        Users
+                      </Link>
+                    </li>
+                    <li className="text-white self-center">
                       <Link to="/services" className="flex items-center">
-                        <MdOutlineCleaningServices className="mr-1"/>
+                        <MdOutlineCleaningServices className="mr-1" />
                         Services
                       </Link>
                     </li>
@@ -229,7 +257,7 @@ const Navbar = () => {
                             className="flex items-center"
                             onClick={closeDropdown}
                           >
-                            <AiOutlineHome className="mr-1"/> Home
+                            <AiOutlineHome className="mr-1" /> Home
                           </Link>
                         </li>
                         <li className="flex justify-center p-1">
@@ -238,16 +266,35 @@ const Navbar = () => {
                             className="flex items-center"
                             onClick={closeDropdown}
                           >
-                            <AiOutlineFileText className="mr-1"/> My Posts
+                            <AiOutlineFileText className="mr-1" /> My Posts
                           </Link>
                         </li>
+                        <li className="flex justify-center p-1">
+                          <Link
+                            to="/myvideo"
+                            className="flex items-center"
+                            onClick={closeDropdown}
+                          >
+                            <MdOutlineOndemandVideo className="mr-1" /> My Video
+                          </Link>
+                        </li>
+                        <li className="flex justify-center p-1">
+                          <Link
+                            to="/videoposts"
+                            className="flex items-center"
+                            onClick={closeDropdown}
+                          >
+                            <MdOutlineVideoLibrary className="mr-1" /> Videos
+                          </Link>
+                        </li>
+
                         <li className="flex justify-center p-1">
                           <Link
                             to="/addwork"
                             className="flex items-center"
                             onClick={closeDropdown}
                           >
-                            <AiOutlineFileText className="mr-1"/> Add Work
+                            <MdWorkspacePremium className="mr-1" /> Add Work
                           </Link>
                         </li>
                       </>
@@ -255,9 +302,15 @@ const Navbar = () => {
                     {(user.role === "admin" || user.role === "staff") && (
                       <>
                         <li className=" self-center">
-                          <Link to="/admin" className="flex items-center">
+                          <Link to="/admin" onClick={closeDropdown} className="flex items-center">
                             <LiaUserLockSolid className="mr-1" />
                             Admin
+                          </Link>
+                        </li>
+                        <li className=" self-center">
+                          <Link to="/users" onClick={closeDropdown} className="flex items-center">
+                            <HiOutlineUsers className="mr-1" />
+                            Users
                           </Link>
                         </li>
                         <li className="flex justify-center p-1">
@@ -266,7 +319,7 @@ const Navbar = () => {
                             onClick={closeDropdown}
                             className="flex items-center"
                           >
-                            <MdOutlineCleaningServices className="mr-1"/>
+                            <MdOutlineCleaningServices className="mr-1" />
                             Services
                           </Link>
                         </li>

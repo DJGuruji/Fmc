@@ -13,6 +13,7 @@ const UserSchema = new mongoose.Schema({
   },
   photo: { type: String, default: "" },
   state: { type: String, default: "" },
+  job: { type: String, default: "" },
   district: { type: String, default: "" },
   office: { type: String, default: "" },
   officePlace: { type: String, default: "" },

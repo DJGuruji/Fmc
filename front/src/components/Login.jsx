@@ -4,6 +4,8 @@ import { AiOutlineMail, AiOutlineLock } from 'react-icons/ai';
 import axios from '../axios';
 import { useAuthStore } from '../store/authStore';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -25,9 +27,10 @@ const Login = () => {
     try {
       const res = await axios.post('/auth/login', formData);
       login(res.data);
+      
       navigate('/');
     } catch (error) {
-      alert(error.response?.data?.message || 'An error occurred');
+      toast.error(error.response?.data?.message || 'An error occurred');
     }
   };
 
@@ -65,7 +68,7 @@ const Login = () => {
             />
           </div>
         </div>
-        <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200">Login</button>
+        <button type="submit" className="font-bold border-2 border-blue-800 w-full bg-blue-300 text-blue-800 py-2 rounded-md hover:bg-blue-400 transition duration-200">Login</button>
        <p className="pt-5">
        <Link to="/forgotpass" className='text-blue-600 hover:text-blue-400 underline '>Forgot Password ?</Link>
        </p>
