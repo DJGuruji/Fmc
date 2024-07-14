@@ -19,6 +19,7 @@ const getAllUsers = async (req, res) => {
       res.status(500).json({ message: 'Failed to retrieve users' });
     }
   };
+
   const deleteUser = async (req, res) => {
     try {
       const user = await User.findById(req.params.userId);
@@ -27,7 +28,7 @@ const getAllUsers = async (req, res) => {
         return res.status(404).json({ message: "User not found" });
       }
   
-      await user.deleteOne(); // Use deleteOne() method to remove the document
+      await user.deleteOne(); 
       res.json({ message: "User removed" });
     } catch (error) {
       console.error("Error deleting user:", error);

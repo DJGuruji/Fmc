@@ -38,6 +38,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/users",require("./routes/userRoutes"))
 app.use("/api/posts", require("./routes/postRoutes"));
 app.use("/api/videoposts", require("./routes/videoPostRoutes"));
 app.use("/api/admin",require("./routes/adminRoutes"))

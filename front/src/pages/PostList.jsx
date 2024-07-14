@@ -2,23 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { getPosts, deletePost } from '../services/PostService';
 import { useAuthStore } from '../store/authStore';
 import { toast } from 'react-toastify';
-
+import config from '../config';
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
   const { user } = useAuthStore();
   const [showMore, setShowMore] = useState({});
-  const [loading, setLoading] = useState(true); // Step 1: Loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const data = await getPosts(user._id); 
+        const data = await getPosts(user._id);
         setPosts(data);
-        setLoading(false); // Step 2: Update loading state when data fetching completes
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching posts:", error);
-        setLoading(false); // Ensure loading state is set to false in case of error
+        setLoading(false);
       }
     };
 
@@ -53,19 +53,18 @@ const PostList = () => {
 
   return (
     <div className="container mx-auto p-4">
-      
-      
-      {loading ? ( // Step 3: Conditional rendering based on loading state
+      {loading ? (
         <p className="text-center">Loading posts...</p>
+      ) : posts.length === 0 ? (
+        <p className="text-center">No posts available.</p>
       ) : (
         posts.map(post => (
           <div className="bg-white rounded-lg shadow-md overflow-hidden md:flex md:flex-row mb-6" key={post._id}>
             <div className="w-full md:w-1/2 h-1/3 md:flex-shrink-0">
-             
               <h2 className="text-xl font-bold mb-2 text-center">{post.postName}</h2>
               <img
-                className="w-full h-full object-contain md:object-cover md:px-16 lg:px-16 xl:px-16 "
-                src={`http://localhost:5000/${post.postImage}`}
+                className="w-full h-full object-contain md:object-cover md:px-16 lg:px-16 xl:px-16"
+                src={config.API_URL+`${post.postImage}`}
                 alt={post.postName}
               />
             </div>
@@ -80,8 +79,8 @@ const PostList = () => {
                 {showMore[post._id] ? 'Read Less' : 'Read More'}
               </button>
               <button
-                onClick={() => deletePostHandler(post._id)} // Pass post._id to deletePostHandler
-                className="bg-red-300 hover:bg-red-400 text-red-700  px-3 py-1 rounded-md hover:rounded-xl border-2 border-red-700"
+                onClick={() => deletePostHandler(post._id)}
+                className="bg-red-300 hover:bg-red-400 text-red-700 px-3 py-1 rounded-md hover:rounded-xl border-2 border-red-700"
               >
                 Delete Post
               </button>

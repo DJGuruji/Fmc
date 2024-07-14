@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuthStore } from "../store/authStore";
+import { useNavigate } from "react-router-dom";
 import {
   AiOutlineUser,
   AiOutlineLogin,
@@ -24,10 +25,12 @@ import {
   MdOutlineVideoLibrary,
   MdWorkspacePremium,
 } from "react-icons/md";
+import UserSearch from "./UserSearch";
 
 import logo from "../assets/musk.jpeg";
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [submenuOpen, setSubmenuOpen] = useState(false);
@@ -35,6 +38,12 @@ const Navbar = () => {
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const closeDropdown = () => setDropdownOpen(false);
   const toggleSubmenu = () => setSubmenuOpen(!submenuOpen);
+  
+  const handleLogoutAndToggle = () => {
+    logout();
+    toggleSubmenu();
+    navigate("/login")
+  };
 
   return (
     <>
@@ -59,7 +68,7 @@ const Navbar = () => {
                     <Link
                       to={`/profile/${user._id}`}
                       onClick={toggleSubmenu}
-                      className="text-center flex items-center "
+                      className="text-center flex items-center hover:bg-zinc-200 p-2  rounded-xl "
                     >
                       <CgProfile className="mr-1" />
                       View Profile
@@ -69,7 +78,7 @@ const Navbar = () => {
                     <Link
                       to="/connections"
                       onClick={toggleSubmenu}
-                      className="text-center flex items-center"
+                      className="text-center flex items-center hover:bg-zinc-200 p-2  rounded-xl"
                     >
                       <PiNetwork className="mr-1" />
                       Connections
@@ -79,7 +88,7 @@ const Navbar = () => {
                     <Link
                       to="/likes"
                       onClick={toggleSubmenu}
-                      className="text-center flex items-center"
+                      className="text-center flex items-center hover:bg-zinc-200 p-2  rounded-xl"
                     >
                       <FcLike className="mr-1" />
                       Wish List
@@ -88,7 +97,7 @@ const Navbar = () => {
                   <li className="p-2">
                     <Link
                       to="/settings"
-                      className="text-center flex items-center"
+                      className="text-center flex items-center hover:bg-zinc-200 p-2  rounded-xl"
                       onClick={toggleSubmenu}
                     >
                       <IoSettingsOutline className="mr-1" />
@@ -98,8 +107,8 @@ const Navbar = () => {
 
                   <li className="text-white self-center p-4">
                     <button
-                      onClick={logout}
-                      className="border-2 border-red-700 text-red-800 flex items-center bg-red-300 hover:bg-red-400 rounded-md p-1"
+                      onClick={handleLogoutAndToggle}
+                      className=" border-red-700 text-white flex items-center bg-red-500 hover:bg-red-600 rounded-md p-1"
                     >
                       <AiOutlineLogout className="mr-2" /> Logout
                     </button>
@@ -132,42 +141,34 @@ const Navbar = () => {
                   user.role === "admin" ||
                   user.role === "staff") && (
                   <>
-                    <li className="">
-                      <form
-                        action=""
-                        method="post"
-                        className="flex items-center rounded-md p-0.5 bg-white"
-                      >
-                        <AiOutlineSearch className="text-xl text-black" />
-                        <input
-                          type="text"
-                          placeholder="Search by name or place"
-                          className="p-1 rounded-md active:border-0"
-                        />
-                      </form>
+                    <li className="flex ">
+                    {/*  */}
+                          <UserSearch>
+                           
+                          </UserSearch>
                     </li>
                     <li className="text-white self-center">
-                      <Link to="/" className="flex items-center">
+                      <Link to="/" className="flex items-center hover:bg-zinc-600  rounded-xl">
                         <AiOutlineHome className="mr-1" /> Home
                       </Link>
                     </li>
                     <li className="text-white self-center">
-                      <Link to="/posts" className="flex items-center">
+                      <Link to="/posts" className="flex items-center hover:bg-zinc-600   rounded-xl">
                         <AiOutlineFileText className="mr-1" /> My Posts
                       </Link>
                     </li>
                     <li className="text-white self-center">
-                      <Link to="/myvideo" className="flex items-center">
+                      <Link to="/myvideo" className="flex items-center hover:bg-zinc-600  rounded-xl">
                         <MdOutlineOndemandVideo className="mr-1" /> My Videos
                       </Link>
                     </li>
                     <li className="text-white self-center">
-                      <Link to="/videoposts" className="flex items-center">
+                      <Link to="/videoposts" className="flex items-center hover:bg-zinc-600  rounded-xl">
                         <MdOutlineVideoLibrary className="mr-1" /> Videos
                       </Link>
                     </li>
                     <li className="text-white self-center">
-                      <Link to="/addwork" className="flex items-center">
+                      <Link to="/addwork" className="flex items-center hover:bg-zinc-600  rounded-xl">
                         <MdWorkspacePremium className="mr-1" /> Add Work
                       </Link>
                     </li>
@@ -176,19 +177,19 @@ const Navbar = () => {
                 {(user.role === "admin" || user.role === "staff") && (
                   <>
                     <li className="text-white self-center">
-                      <Link to="/admin" className="flex items-center">
+                      <Link to="/admin" className="flex items-center hover:bg-zinc-600  rounded-xl">
                         <LiaUserLockSolid className="mr-1" />
                         Admin
                       </Link>
                     </li>
                     <li className="text-white self-center">
-                      <Link to="/users" className="flex items-center">
+                      <Link to="/users" className="flex items-center hover:bg-zinc-600 rounded-xl">
                         <HiOutlineUsers className="mr-1" />
                         Users
                       </Link>
                     </li>
                     <li className="text-white self-center">
-                      <Link to="/services" className="flex items-center">
+                      <Link to="/services" className="flex items-center hover:bg-zinc-600 rounded-xl">
                         <MdOutlineCleaningServices className="mr-1" />
                         Services
                       </Link>
@@ -196,7 +197,7 @@ const Navbar = () => {
                   </>
                 )}
                 <li className="text-white self-center">
-                  <Link to="/addwork" className="flex items-center">
+                  <Link to="/addwork" className="flex items-center hover:bg-zinc-600 rounded-xl">
                     <BsChatSquareDots className="mr-1" /> Chat
                   </Link>
                 </li>
@@ -209,7 +210,7 @@ const Navbar = () => {
         {dropdownOpen && (
           <div className="md:hidden">
             <div className="w-28 absolute mt-2 rounded-md shadow-lg bg-white right-0 border-2 border-blue-500">
-              <ul className="flex flex-col space-y-2 mt-2">
+              <ul className="flex flex-col space-y-2 mt-2 flex-wrap">
                 {!user ? (
                   <>
                     <li className="text-lg">
@@ -238,18 +239,9 @@ const Navbar = () => {
                       user.role === "staff") && (
                       <>
                         <li className="mt-5">
-                          <form
-                            action=""
-                            method="post"
-                            className="flex items-center rounded-md bg-white"
-                          >
-                            <AiOutlineSearch className="text-lg" />
-                            <input
-                              type="text"
-                              placeholder="Search by name or place"
-                              className="p-1 rounded-md w-full"
-                            />
-                          </form>
+                        <UserSearch>
+                           
+                           </UserSearch>
                         </li>
                         <li className="flex justify-center p-1">
                           <Link

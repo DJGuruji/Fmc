@@ -8,12 +8,12 @@ import Profile from "./pages/Profile";
 import Home from "./pages/Home";
 import AddWork from "./pages/AddWork";
 
-import Users from "./pages/Users";
-import Services from "./pages/Services";
+import Users from "./pages/admin/Users";
+import Services from "./pages/admin/Services";
 import Pnf from "./pages/Pnf";
 import Connections from "./pages/Connections";
 import Likes from "./pages/Likes";
-import Admin from "./pages/Admin";
+import Admin from "./pages/admin/Admin";
 import Settings from "./pages/Settings";
 import ForgotPass from "./components/ForgotPass";
 import PostList from "./pages/PostList";
@@ -24,6 +24,9 @@ import CreateVideoPost from "./components/CreateVideoPost";
 import { useAuthStore } from "./store/authStore";
 import Navbar from "./components/NavBar";
 import UserProfileShow from "./pages/UserProfileShow";
+import DeleteAcc from "./components/DeleteAcc";
+
+import PasswordChange from "./components/PasswordReset";
 
 const App = () => {
   const { user } = useAuthStore();
@@ -53,18 +56,25 @@ const App = () => {
         />
         <Route path="/myvideo" element={user ? <MyVideo /> : <Login />} />
         <Route path="/createpost" element={user ? <CreatePost /> : <Login />} />
+        <Route path="/deleteacc" element={user ? <DeleteAcc /> : <Login />} />
         <Route
           path="/createvideopost"
           element={user ? <CreateVideoPost /> : <Login />}
         />
-         <Route path="/profile/:userId" element={user ? <UserProfileShow /> : <Login />} />
+        <Route
+          path="/changepass"
+          element={user ? <PasswordChange /> : <Login />}
+        />
+        <Route
+          path="/profile/:userId"
+          element={user ? <UserProfileShow /> : <Login />}
+        />
 
         {user && (user.role === "admin" || user.role === "staff") && (
           <>
             <Route path="/services" element={user ? <Services /> : <Login />} />
             <Route path="/admin" element={user ? <Admin /> : <Login />} />
             <Route path="/users" element={user ? <Users /> : <Login />} />
-           
           </>
         )}
       </Routes>

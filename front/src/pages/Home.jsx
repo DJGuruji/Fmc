@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { getPosts } from "../services/PostService";
+import { getPosts, deletePost } from "../services/PostService";
 import { Link } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
+import { toast } from 'react-toastify';
+import config from "../config";
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
+  const { user } = useAuthStore();
   const [showMore, setShowMore] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -29,18 +33,43 @@ const Home = () => {
     }));
   };
 
+  const deletePostHandler = async (postId) => {
+    if (window.confirm("Are you sure you want to delete this Post?")) {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await deletePost(postId, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log("Response from backend:", response.data);
+        setPosts(posts.filter((post) => post._id !== postId)); // Update posts state after deletion
+        toast.success("Post Deleted");
+      } catch (error) {
+        toast.error("Post Deletion Failed");
+        console.error("Error deleting post:", error);
+      }
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Latest Posts</h1>
-      
+
       {loading ? (
         <p className="text-center">Loading posts...</p>
       ) : (
         posts.map((post) => {
-          const { _id, user, postName, postImage, postDescription } = post;
-          const postLink = `/profile/${user._id}`;
+          const { _id, user: postUser, postName, postImage, postDescription } = post;
+          const postLink = postUser ? `/profile/${postUser._id}` : "#";
           const showMoreText = showMore[_id] ? "Read Less" : "Read More";
-          const description = showMore[_id] ? postDescription : `${postDescription.substring(0, 100)}...`;
+          const description = showMore[_id]
+            ? postDescription
+            : `${postDescription.substring(0, 100)}...`;
+
+          // Check if the current logged-in user is the admin who created the post
+          const isAdmin = user && user.role === 'admin';
+         // const isOwner = user && postUser && user._id === postUser._id;
 
           return (
             <div
@@ -48,13 +77,24 @@ const Home = () => {
               key={_id}
             >
               <div className="w-full md:w-1/2 h-1/3 md:flex-shrink-0">
-                <p className="text-gray-600 p-2 ml-5">
-                  <Link to={postLink} className="text-blue-600 hover:underline text-lg">{user.name}</Link>
-                </p>
-                <h2 className="text-xl font-bold mb-2 text-center">{postName}</h2>
+                {postUser ? (
+                  <p className="text-gray-600 p-2 ml-5">
+                    <Link
+                      to={postLink}
+                      className="text-blue-600 hover:underline text-lg"
+                    >
+                      {postUser.name}
+                    </Link>
+                  </p>
+                ) : (
+                  <p className="text-gray-600 p-2 ml-5">Unknown User</p>
+                )}
+                <h2 className="text-xl font-bold mb-2 text-center">
+                  {postName}
+                </h2>
                 <img
                   className="w-full h-full object-contain md:object-cover md:px-16 lg:px-16 xl:px-16"
-                  src={`http://localhost:5000/${postImage}`}
+                  src={config.API_URL+`${postImage}`}
                   alt={postName}
                 />
               </div>
@@ -68,6 +108,14 @@ const Home = () => {
                 >
                   {showMoreText}
                 </button>
+                {isAdmin  ? (
+                  <button
+                    onClick={() => deletePostHandler(_id)}
+                    className="bg-red-300 hover:bg-red-400 text-red-700 px-3 py-1 rounded-md hover:rounded-xl border-2 border-red-700"
+                  >
+                    Delete Post
+                  </button>
+                ) : null}
               </div>
             </div>
           );

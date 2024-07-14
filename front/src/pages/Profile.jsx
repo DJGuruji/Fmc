@@ -13,17 +13,18 @@ const Profile = () => {
   const [district, setDistrict] = useState("");
   const [office, setOffice] = useState("");
   const [officePlace, setOfficePlace] = useState("");
+  const [loading, setLoading] = useState(true); // New loading state
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get("/auth/profile", {
+        const response = await axios.get("/users/profile", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
         const userData = response.data;
-        setUserId(userData._id);  // Store the user ID
+        setUserId(userData._id); // Store the user ID
         setName(userData.name);
         setEmail(userData.email);
         setMobile(userData.mobile || "");
@@ -35,6 +36,8 @@ const Profile = () => {
         setOfficePlace(userData.officePlace || "");
       } catch (error) {
         toast.error("Error fetching user profile:", error);
+      } finally {
+        setLoading(false); // Set loading to false after data is fetched
       }
     };
 
@@ -43,7 +46,7 @@ const Profile = () => {
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
-  
+
     try {
       const formData = new FormData();
       formData.append("name", name);
@@ -57,14 +60,14 @@ const Profile = () => {
       formData.append("district", district);
       formData.append("office", office);
       formData.append("officePlace", officePlace);
-  
-      const response = await axios.put(`/auth/profile/${userId}`, formData, {
+
+      const response = await axios.put(`/users/profile/${userId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-    
+
       toast.success("Profile updated successfully:");
       console.log(response.data);
     } catch (error) {
@@ -72,18 +75,23 @@ const Profile = () => {
       toast.error("Error updating profile:", error);
     }
   };
-  
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-semibold mb-6 text-center">
-        Update Profile
-      </h2>
+      <h2 className="text-2xl font-semibold mb-6 text-center">Update Profile</h2>
       <form onSubmit={handleUpdateProfile} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Name:
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Name:</label>
           <input
             type="text"
             value={name}
@@ -94,9 +102,7 @@ const Profile = () => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Email:
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Email:</label>
           <input
             type="email"
             value={email}
@@ -107,9 +113,7 @@ const Profile = () => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Mobile:
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Mobile:</label>
           <input
             type="text"
             value={mobile}
@@ -119,9 +123,7 @@ const Profile = () => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Photo:
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Photo:</label>
           <input
             type="file"
             accept="image/*"
@@ -130,9 +132,7 @@ const Profile = () => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            State:
-          </label>
+          <label className="block text-sm font-medium text-gray-700">State:</label>
           <input
             type="text"
             value={state}
@@ -142,9 +142,7 @@ const Profile = () => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Profession:
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Profession:</label>
           <input
             type="text"
             value={job}
@@ -154,9 +152,7 @@ const Profile = () => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            District:
-          </label>
+          <label className="block text-sm font-medium text-gray-700">District:</label>
           <input
             type="text"
             value={district}
@@ -166,9 +162,7 @@ const Profile = () => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Office:
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Office:</label>
           <input
             type="text"
             value={office}
@@ -178,9 +172,7 @@ const Profile = () => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Office Place:
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Office Place:</label>
           <input
             type="text"
             value={officePlace}

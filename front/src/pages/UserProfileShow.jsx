@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { useParams, Link } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { getPosts } from "../services/PostService";
+import config from "../config";
 
 const UserProfileShow = () => {
   const { userId } = useParams();
@@ -71,11 +72,11 @@ const UserProfileShow = () => {
 
   return (
     <div className="flex justify-center items-center ">
-      <div className="md:w-3/4 lg:w-3/4 xl:w-3/4 mx-auto p-6 bg-white shadow-lg rounded-lg">
+      <div className="md:w-3/4 lg:w-3/4 xl:w-3/4 mx-auto p-6 bg-white rounded-lg">
         <div className="text-center">
           {photo && (
             <img
-              src={`http://localhost:5000/${photo}`}
+              src={config.API_URL+`${photo}`}
               alt="Profile"
               className="mx-auto w-24 h-24 rounded-full object-cover mb-4"
             />

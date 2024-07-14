@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const Post = require('./Post');  
 
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -33,5 +34,18 @@ UserSchema.pre("save", async function (next) {
 UserSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
+
+
+// Middleware to delete associated posts when a user is deleted
+UserSchema.pre('remove', async function(next) {
+  try {
+    await Post.deleteMany({ user: this._id });
+    console.log(`Posts deleted for user ${this._id}`);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 
 module.exports = mongoose.model("User", UserSchema);
