@@ -40,7 +40,7 @@ const UserSearch = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search for users"
-          className="border border-gray-300 rounded-l-md py-1 px-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="border border-gray-300 rounded-l-md py-1 md:px-2 lg:px-2 xl:px-2 w-3/4 md:w-ful lg:w-full xl:w-full  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
         <button type="submit" className="bg-blue-500 py-1 px-2 text-white rounded-r-md">
           <AiOutlineSearch />

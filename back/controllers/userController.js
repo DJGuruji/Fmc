@@ -30,7 +30,7 @@ const upload = multer({
       cb("Error: Images only!");
     }
   },
-}).single("profileImage");
+}).single("postImage");
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -38,11 +38,74 @@ const generateToken = (id) => {
   });
 };
 
+
+
+
+// const updateUserProfile = async (req, res) => {
+//   upload(req, res, async (err) => {
+//     if (err) {
+//       // A Multer error occurred when uploading
+//       console.error("Multer error:", err);
+//       return res.status(400).json({ message: "Error uploading file", error: err });
+//     }
+
+//     if (!req.file) {
+     
+//       return res.status(400).json({ message: "No file uploaded" });
+//     }
+
+//     try {
+//       const user = await User.findById(req.params.userId);
+//       console.log(req.file.path);
+
+//       if (!user) {
+//         return res.status(404).json({ message: "User not found" });
+//       }
+
+//       console.log("Incoming request data:", req.body);
+
+//       user.name = req.body.name ?? user.name;
+//       user.mobile = req.body.mobile ?? user.mobile;
+//       user.email = req.body.email ?? user.email;
+//       user.photo = req.file.path ?? user.photo; 
+//       user.state = req.body.state ?? user.state;
+//       user.job = req.body.job ?? user.job;
+//       user.district = req.body.district ?? user.district;
+//       user.office = req.body.office ?? user.office;
+//       user.officePlace = req.body.officePlace ?? user.officePlace;
+
+//       console.log("Updated user data:", user);
+
+//       const updatedUser = await user.save();
+
+//       return res.json({
+//         _id: updatedUser._id,
+//         name: updatedUser.name,
+//         email: updatedUser.email,
+//         mobile: updatedUser.mobile,
+//         photo: updatedUser.photo,
+//         state: updatedUser.state,
+//         job: updatedUser.job,
+//         district: updatedUser.district,
+//         office: updatedUser.office,
+//         officePlace: updatedUser.officePlace,
+//         role: updatedUser.role,
+//         token: generateToken(updatedUser._id), // Ensure this function is secure
+//       });
+//     } catch (error) {
+//       console.error("Error updating user profile:", error);
+//       return res.status(500).json({ message: "Failed to update profile", error });
+//     }
+//   });
+// };
+
+
 const updateUserProfile = async (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
-      console.log("eroor in uploading");
-      return res.status(400).json({ message: err });
+      // A Multer error occurred when uploading
+      console.error("Multer error:", err);
+      return res.status(400).json({ message: "Error uploading file", error: err });
     }
 
     try {
@@ -52,20 +115,21 @@ const updateUserProfile = async (req, res) => {
         return res.status(404).json({ message: "User not found" });
       }
 
-      console.log("Incoming request data:", req.body);
-
-      // Update user fields if provided in the request body
+      // Update user data based on request body
       user.name = req.body.name ?? user.name;
       user.mobile = req.body.mobile ?? user.mobile;
       user.email = req.body.email ?? user.email;
-      user.photo = req.file ? req.file.path : user.photo; // Save the file path
+      
+      // Check if photo was uploaded; if not, retain the existing photo
+      if (req.file) {
+        user.photo = req.file.path;
+      }
+
       user.state = req.body.state ?? user.state;
       user.job = req.body.job ?? user.job;
       user.district = req.body.district ?? user.district;
       user.office = req.body.office ?? user.office;
       user.officePlace = req.body.officePlace ?? user.officePlace;
-
-      console.log("Updated user data:", user);
 
       const updatedUser = await user.save();
 
@@ -74,7 +138,7 @@ const updateUserProfile = async (req, res) => {
         name: updatedUser.name,
         email: updatedUser.email,
         mobile: updatedUser.mobile,
-        photo: updatedUser.photo,
+        photo: updatedUser.photo, // Return the updated photo path
         state: updatedUser.state,
         job: updatedUser.job,
         district: updatedUser.district,
@@ -85,10 +149,13 @@ const updateUserProfile = async (req, res) => {
       });
     } catch (error) {
       console.error("Error updating user profile:", error);
-      res.status(500).json({ message: "Failed to update profile" });
+      return res.status(500).json({ message: "Failed to update profile", error });
     }
   });
 };
+
+
+
 
 const deleteAccount = async (req, res) => {
   const { password } = req.body;

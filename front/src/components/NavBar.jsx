@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
+import axios from "../axios";
+import config from "../config";
 import {
   AiOutlineUser,
   AiOutlineLogin,
@@ -27,40 +29,67 @@ import {
 } from "react-icons/md";
 import UserSearch from "./UserSearch";
 
-import logo from "../assets/musk.jpeg";
+
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [submenuOpen, setSubmenuOpen] = useState(false);
+  const [photo, setPhoto] = useState(null);
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const closeDropdown = () => setDropdownOpen(false);
   const toggleSubmenu = () => setSubmenuOpen(!submenuOpen);
-  
+
   const handleLogoutAndToggle = () => {
     logout();
     toggleSubmenu();
-    navigate("/login")
+    navigate("/login");
   };
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get("/users/profile", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        setPhoto(response.data.photo || "");
+      } catch (error) {
+        toast.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   return (
     <>
-      <nav className="bg-zinc-700 p-2 sticky top-0 ">
+      <nav className="bg-zinc-700 p-1  sticky top-0">
         <div className="flex justify-between items-center">
           {user && (
             <div className="relative">
-              <div className="flex p-1">
-                <img
-                  src={logo}
-                  className="menu-item w-10 h-10 md:w-12 md:h-12 lg:w-12 lg:h-12 rounded-full cursor-pointer"
-                  alt={logo}
-                  onClick={toggleSubmenu}
-                />
-                <p className="text-zinc-200 font-semi-bold self-center px-5">
-                  Hello {user.name}
-                </p>
+              <div className="flex ">
+                <span   className="rounded-full ">
+                {photo ? (
+                  <img
+                    src={config.API_URL + photo}
+                    alt="User profile"
+                    className="mx-auto md:w-16 lg:w-16 xl:w-16 md:h-16 lg:h-16 xl:h-16 w-11 h-11 rounded-full object-cover "
+                    onClick={toggleSubmenu}
+                  />
+                ) : (
+                  <CgProfile
+                    className="bg-zinc-300 text-zinc-600  w-11 h-11 rounded-full cursor-pointer"
+                    onClick={toggleSubmenu}
+                  />
+                )}
+                </span>
+                <span className="flex  items-center ml-6" >
+                  <UserSearch className="" />
+                </span>
               </div>
               {submenuOpen && (
                 <ul className="sub-menu absolute mt-2 rounded-md shadow-lg bg-white border-2 border-blue-500 left-0">
@@ -68,7 +97,7 @@ const Navbar = () => {
                     <Link
                       to={`/profile/${user._id}`}
                       onClick={toggleSubmenu}
-                      className="text-center flex items-center hover:bg-zinc-200 p-2  rounded-xl "
+                      className="text-center flex items-center hover:bg-zinc-200 p-2 rounded-xl"
                     >
                       <CgProfile className="mr-1" />
                       View Profile
@@ -78,7 +107,7 @@ const Navbar = () => {
                     <Link
                       to="/connections"
                       onClick={toggleSubmenu}
-                      className="text-center flex items-center hover:bg-zinc-200 p-2  rounded-xl"
+                      className="text-center flex items-center hover:bg-zinc-200 p-2 rounded-xl"
                     >
                       <PiNetwork className="mr-1" />
                       Connections
@@ -88,7 +117,7 @@ const Navbar = () => {
                     <Link
                       to="/likes"
                       onClick={toggleSubmenu}
-                      className="text-center flex items-center hover:bg-zinc-200 p-2  rounded-xl"
+                      className="text-center flex items-center hover:bg-zinc-200 p-2 rounded-xl"
                     >
                       <FcLike className="mr-1" />
                       Wish List
@@ -97,18 +126,17 @@ const Navbar = () => {
                   <li className="p-2">
                     <Link
                       to="/settings"
-                      className="text-center flex items-center hover:bg-zinc-200 p-2  rounded-xl"
+                      className="text-center flex items-center hover:bg-zinc-200 p-2 rounded-xl"
                       onClick={toggleSubmenu}
                     >
                       <IoSettingsOutline className="mr-1" />
                       Settings
                     </Link>
                   </li>
-
                   <li className="text-white self-center p-4">
                     <button
                       onClick={handleLogoutAndToggle}
-                      className=" border-red-700 text-white flex items-center bg-red-500 hover:bg-red-600 rounded-md p-1"
+                      className="border-red-700 text-white flex items-center bg-red-500 hover:bg-red-600 rounded-md p-1"
                     >
                       <AiOutlineLogout className="mr-2" /> Logout
                     </button>
@@ -117,7 +145,7 @@ const Navbar = () => {
               )}
             </div>
           )}
-          <button className="md:hidden text-white" onClick={toggleDropdown}>
+          <button className="md:hidden text-white mr-2" onClick={toggleDropdown}>
             <div className="w-8 h-1 bg-white m-1 rounded-lg"></div>
             <div className="ml-3 w-6 h-1 bg-white m-1 rounded-lg"></div>
           </button>
@@ -141,34 +169,43 @@ const Navbar = () => {
                   user.role === "admin" ||
                   user.role === "staff") && (
                   <>
-                    <li className="flex ">
-                    {/*  */}
-                          <UserSearch>
-                           
-                          </UserSearch>
-                    </li>
                     <li className="text-white self-center">
-                      <Link to="/" className="flex items-center hover:bg-zinc-600  rounded-xl">
+                      <Link
+                        to="/"
+                        className="flex items-center hover:bg-zinc-600 rounded-xl"
+                      >
                         <AiOutlineHome className="mr-1" /> Home
                       </Link>
                     </li>
                     <li className="text-white self-center">
-                      <Link to="/posts" className="flex items-center hover:bg-zinc-600   rounded-xl">
+                      <Link
+                        to="/posts"
+                        className="flex items-center hover:bg-zinc-600 rounded-xl"
+                      >
                         <AiOutlineFileText className="mr-1" /> My Posts
                       </Link>
                     </li>
                     <li className="text-white self-center">
-                      <Link to="/myvideo" className="flex items-center hover:bg-zinc-600  rounded-xl">
+                      <Link
+                        to="/myvideo"
+                        className="flex items-center hover:bg-zinc-600 rounded-xl"
+                      >
                         <MdOutlineOndemandVideo className="mr-1" /> My Videos
                       </Link>
                     </li>
                     <li className="text-white self-center">
-                      <Link to="/videoposts" className="flex items-center hover:bg-zinc-600  rounded-xl">
+                      <Link
+                        to="/videoposts"
+                        className="flex items-center hover:bg-zinc-600 rounded-xl"
+                      >
                         <MdOutlineVideoLibrary className="mr-1" /> Videos
                       </Link>
                     </li>
                     <li className="text-white self-center">
-                      <Link to="/addwork" className="flex items-center hover:bg-zinc-600  rounded-xl">
+                      <Link
+                        to="/addwork"
+                        className="flex items-center hover:bg-zinc-600 rounded-xl"
+                      >
                         <MdWorkspacePremium className="mr-1" /> Add Work
                       </Link>
                     </li>
@@ -177,19 +214,19 @@ const Navbar = () => {
                 {(user.role === "admin" || user.role === "staff") && (
                   <>
                     <li className="text-white self-center">
-                      <Link to="/admin" className="flex items-center hover:bg-zinc-600  rounded-xl">
-                        <LiaUserLockSolid className="mr-1" />
-                        Admin
-                      </Link>
-                    </li>
-                    <li className="text-white self-center">
-                      <Link to="/users" className="flex items-center hover:bg-zinc-600 rounded-xl">
+                      <Link
+                        to="/users"
+                        className="flex items-center hover:bg-zinc-600 rounded-xl"
+                      >
                         <HiOutlineUsers className="mr-1" />
                         Users
                       </Link>
                     </li>
                     <li className="text-white self-center">
-                      <Link to="/services" className="flex items-center hover:bg-zinc-600 rounded-xl">
+                      <Link
+                        to="/services"
+                        className="flex items-center hover:bg-zinc-600 rounded-xl"
+                      >
                         <MdOutlineCleaningServices className="mr-1" />
                         Services
                       </Link>
@@ -197,7 +234,10 @@ const Navbar = () => {
                   </>
                 )}
                 <li className="text-white self-center">
-                  <Link to="/addwork" className="flex items-center hover:bg-zinc-600 rounded-xl">
+                  <Link
+                    to="/addwork"
+                    className="flex items-center hover:bg-zinc-600 rounded-xl mr-2"
+                  >
                     <BsChatSquareDots className="mr-1" /> Chat
                   </Link>
                 </li>
@@ -205,8 +245,6 @@ const Navbar = () => {
             )}
           </ul>
         </div>
-
-        {/* mobile */}
         {dropdownOpen && (
           <div className="md:hidden">
             <div className="w-28 absolute mt-2 rounded-md shadow-lg bg-white right-0 border-2 border-blue-500">
@@ -228,7 +266,7 @@ const Navbar = () => {
                         className="flex items-center"
                         onClick={closeDropdown}
                       >
-                        <AiOutlineLogin className="mr-2" /> Login
+                        <AiOutlineLogin /> Login
                       </Link>
                     </li>
                   </>
@@ -238,92 +276,82 @@ const Navbar = () => {
                       user.role === "admin" ||
                       user.role === "staff") && (
                       <>
-                        <li className="mt-5">
-                        <UserSearch>
-                           
-                           </UserSearch>
-                        </li>
-                        <li className="flex justify-center p-1">
+                        <li className="text-lg">
                           <Link
                             to="/"
                             className="flex items-center"
                             onClick={closeDropdown}
                           >
-                            <AiOutlineHome className="mr-1" /> Home
+                            <AiOutlineHome /> Home
                           </Link>
                         </li>
-                        <li className="flex justify-center p-1">
+                        <li className="text-lg">
                           <Link
                             to="/posts"
                             className="flex items-center"
                             onClick={closeDropdown}
                           >
-                            <AiOutlineFileText className="mr-1" /> My Posts
+                            <AiOutlineFileText /> My Posts
                           </Link>
                         </li>
-                        <li className="flex justify-center p-1">
+                        <li className="text-lg">
                           <Link
                             to="/myvideo"
                             className="flex items-center"
                             onClick={closeDropdown}
                           >
-                            <MdOutlineOndemandVideo className="mr-1" /> My Video
+                            <MdOutlineOndemandVideo /> My Videos
                           </Link>
                         </li>
-                        <li className="flex justify-center p-1">
+                        <li className="text-lg">
                           <Link
                             to="/videoposts"
                             className="flex items-center"
                             onClick={closeDropdown}
                           >
-                            <MdOutlineVideoLibrary className="mr-1" /> Videos
+                            <MdOutlineVideoLibrary /> Videos
                           </Link>
                         </li>
-
-                        <li className="flex justify-center p-1">
+                        <li className="text-lg">
                           <Link
                             to="/addwork"
                             className="flex items-center"
                             onClick={closeDropdown}
                           >
-                            <MdWorkspacePremium className="mr-1" /> Add Work
+                            <MdWorkspacePremium /> Add Work
                           </Link>
                         </li>
                       </>
                     )}
                     {(user.role === "admin" || user.role === "staff") && (
                       <>
-                        <li className=" self-center">
-                          <Link to="/admin" onClick={closeDropdown} className="flex items-center">
-                            <LiaUserLockSolid className="mr-1" />
-                            Admin
+                        <li className="text-lg">
+                          <Link
+                            to="/users"
+                            className="flex items-center"
+                            onClick={closeDropdown}
+                          >
+                            <HiOutlineUsers /> Users
                           </Link>
                         </li>
-                        <li className=" self-center">
-                          <Link to="/users" onClick={closeDropdown} className="flex items-center">
-                            <HiOutlineUsers className="mr-1" />
-                            Users
-                          </Link>
-                        </li>
-                        <li className="flex justify-center p-1">
+                        <li className="text-lg">
                           <Link
                             to="/services"
-                            onClick={closeDropdown}
                             className="flex items-center"
+                            onClick={closeDropdown}
                           >
-                            <MdOutlineCleaningServices className="mr-1" />
-                            Services
+                            <MdOutlineCleaningServices /> Services
                           </Link>
                         </li>
                       </>
                     )}
-                    <li className="flex justify-center p-1">
+                    <li className="text-lg">
                       <Link
                         to="/addwork"
                         className="flex items-center"
                         onClick={closeDropdown}
                       >
-                        <BsChatSquareDots className="mr-1" /> Chat
+                        <BsChatSquareDots /> Chat
                       </Link>
                     </li>
                   </>

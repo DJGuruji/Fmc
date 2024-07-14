@@ -95,7 +95,7 @@ const Users = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-center text-zinc-700 mb-4">All Users</h1>
+      <h1 className="text-center text-zinc-800 mb-4 text-xl">All Users </h1>
 
       <div className="mb-4">
         <input

@@ -7,13 +7,13 @@ const Profile = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
-  const [photo, setPhoto] = useState("");
+  const [photo, setPhoto] = useState(null); // Change to null to handle file input correctly
   const [state, setState] = useState("");
   const [job, setJob] = useState("");
   const [district, setDistrict] = useState("");
   const [office, setOffice] = useState("");
   const [officePlace, setOfficePlace] = useState("");
-  const [loading, setLoading] = useState(true); // New loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -24,7 +24,7 @@ const Profile = () => {
           },
         });
         const userData = response.data;
-        setUserId(userData._id); // Store the user ID
+        setUserId(userData._id);
         setName(userData.name);
         setEmail(userData.email);
         setMobile(userData.mobile || "");
@@ -37,7 +37,7 @@ const Profile = () => {
       } catch (error) {
         toast.error("Error fetching user profile:", error);
       } finally {
-        setLoading(false); // Set loading to false after data is fetched
+        setLoading(false);
       }
     };
 
@@ -53,7 +53,7 @@ const Profile = () => {
       formData.append("email", email);
       formData.append("mobile", mobile);
       if (photo) {
-        formData.append("photo", photo);
+        formData.append("postImage", photo); // Use 'postImage' to match Multer configuration
       }
       formData.append("state", state);
       formData.append("job", job);
@@ -79,7 +79,7 @@ const Profile = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full" role="status">
+        <div className="spinner-border inline-block w-8 h-8 border-4 rounded-full" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>

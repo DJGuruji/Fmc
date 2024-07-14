@@ -22,8 +22,7 @@ const UserProfileShow = () => {
   const [posts, setPosts] = useState([]);
   const [showPosts, setShowPosts] = useState(false);
   const [showMore, setShowMore] = useState({});
-  const [loadingPosts, setLoadingPosts] = useState(false); // Loading state for posts
-
+  const [loadingPosts, setLoadingPosts] = useState(false); 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -32,6 +31,7 @@ const UserProfileShow = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
+        console.log(response.data)
         const userData = response.data;
         setName(userData.name);
         setEmail(userData.email);
@@ -51,7 +51,7 @@ const UserProfileShow = () => {
   }, [userId]);
 
   const fetchUserPosts = async () => {
-    setLoadingPosts(true); // Set loading state to true before fetching posts
+    setLoadingPosts(true); 
     try {
       const postsData = await getPosts(userId);
       setPosts(postsData);
@@ -59,7 +59,7 @@ const UserProfileShow = () => {
     } catch (error) {
       toast.error(`Error fetching user posts: ${error.message}`);
     } finally {
-      setLoadingPosts(false); // Set loading state to false after fetching posts
+      setLoadingPosts(false); 
     }
   };
 

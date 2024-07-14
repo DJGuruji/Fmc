@@ -36,7 +36,7 @@ const Signup = () => {
       toast.success('Account created successfully. You will be redirected to login page.');
       setTimeout(() => {
         navigate('/login');
-      }, 3000);
+      }, 2000);
     } catch (error) {
       toast.error(error.response?.data?.message || 'An error occurred');
     } finally {

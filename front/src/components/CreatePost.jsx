@@ -10,7 +10,7 @@ const CreatePost = () => {
   });
 
   const { postName, postDescription } = formData;
-  const [loading, setLoading] = useState(false); // Step 1: Loading state
+  const [loading, setLoading] = useState(false); 
 
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,7 +22,7 @@ const CreatePost = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Step 2: Set loading state to true during form submission
+    setLoading(true); 
 
     const postData = new FormData();
     postData.append("postName", formData.postName);
@@ -40,7 +40,7 @@ const CreatePost = () => {
     } catch (error) {
       toast.error(error.response?.data?.message || "An error occurred");
     } finally {
-      setLoading(false); // Step 3: Reset loading state after post creation attempt (whether success or error)
+      setLoading(false); 
     }
   };
 

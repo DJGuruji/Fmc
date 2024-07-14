@@ -6,14 +6,13 @@ import { useAuthStore } from '../store/authStore';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: '',
+    identifier: '', // Changed to identifier instead of email
     password: '',
   });
 
-  const { email, password } = formData;
+  const { identifier, password } = formData; // Changed from email to identifier
   const navigate = useNavigate();
   const { login } = useAuthStore();
 
@@ -25,9 +24,8 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post('/auth/login', formData);
+      const res = await axios.post('/auth/login', formData); // Sending identifier instead of email
       login(res.data);
-      
       navigate('/');
     } catch (error) {
       toast.error(error.response?.data?.message || 'An error occurred');
@@ -39,17 +37,17 @@ const Login = () => {
       <form onSubmit={onSubmit} className="bg-white p-6 rounded-lg shadow-md w-full max-w-sm">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2" htmlFor="email">Email</label>
+          <label className="block text-gray-700 mb-2" htmlFor="identifier">Email or Username</label>
           <div className="flex items-center border border-gray-300 rounded-md px-3 py-2">
             <AiOutlineMail className="text-gray-600 mr-2" />
             <input
-              type="email"
-              name="email"
-              value={email}
+              type="text"
+              name="identifier"
+              value={identifier}
               onChange={onChange}
               required
               className="w-full outline-none"
-              placeholder="Enter your email"
+              placeholder="Enter your email or username"
             />
           </div>
         </div>
@@ -69,9 +67,9 @@ const Login = () => {
           </div>
         </div>
         <button type="submit" className="font-bold border-2 border-blue-800 w-full bg-blue-300 text-blue-800 py-2 rounded-md hover:bg-blue-400 transition duration-200">Login</button>
-       <p className="pt-5">
-       <Link to="/forgotpass" className='text-blue-600 hover:text-blue-400 underline '>Forgot Password ?</Link>
-       </p>
+        <p className="pt-5">
+          <Link to="/forgotpass" className='text-blue-600 hover:text-blue-400 underline '>Forgot Password ?</Link>
+        </p>
         <p className="ml-7 lg:ml-9 xl:ml-9 mt-5 ">
           Not registered yet?{" "}
           <a
