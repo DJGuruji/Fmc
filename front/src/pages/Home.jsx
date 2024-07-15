@@ -18,7 +18,7 @@ const Home = () => {
         setPosts(data);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching posts:", error);
+        toast.error("Error fetching posts:", error);
         setLoading(false);
       }
     };

@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "../../axios";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore";
 
 const Users = () => {
+  const { user } = useAuthStore();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -36,8 +38,16 @@ const Users = () => {
   }, []);
 
   // Filter users based on search query
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.job.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.state.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.district.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.officePlace.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.office.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleSearchChange = (event) => {
@@ -93,6 +103,8 @@ const Users = () => {
     }
   };
 
+  const isAdmin = user && user.role === "admin";
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-center text-zinc-800 mb-4 text-xl">All Users </h1>
@@ -102,7 +114,7 @@ const Users = () => {
           type="text"
           value={searchQuery}
           onChange={handleSearchChange}
-          placeholder="Search by name..."
+          placeholder="Search by name or email..."
           className="md:w-1/4 lg:w-1/4 xl:w-1/4  border-2 border-blue-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
@@ -123,8 +135,13 @@ const Users = () => {
                 <th className="px-4 py-2">District</th>
                 <th className="px-4 py-2">Office</th>
                 <th className="px-4 py-2">Address</th>
+                {isAdmin && 
+                <>
+              
                 <th className="px-4 py-2">Actions</th>
                 <th className="px-4 py-2">Promote Role To</th>
+                </>
+                }
               </tr>
             </thead>
             <tbody>
@@ -146,7 +163,9 @@ const Users = () => {
                   <td className="px-4 py-2">{user.district}</td>
                   <td className="px-4 py-2">{user.office}</td>
                   <td className="px-4 py-2">{user.officePlace}</td>
-                  <td className="px-4 py-2">
+                  {isAdmin && ( 
+                    <>
+                    <td className="px-4 py-2">
                     <button
                       onClick={() => deleteUser(user._id)}
                       className="border-2 border-red-800 bg-red-200 hover:bg-red-300 text-red-800 px-3 py-1 rounded-md hover:rounded-xl"
@@ -154,26 +173,29 @@ const Users = () => {
                       Delete
                     </button>
                   </td>
-                  <td className="px-4 py-2">
-                    <button
-                      onClick={() => promoteUser(user._id, "admin")}
-                      className="border-2 border-green-800 bg-green-200 hover:bg-green-300 text-green-800 px-3 py-1 m-1 rounded-md hover:rounded-xl"
-                    >
-                      Admin
-                    </button>
-                    <button
-                      onClick={() => promoteUser(user._id, "staff")}
-                      className="border-2 border-blue-700 bg-blue-200 hover:bg-blue-300 text-blue-800 px-4 py-1 rounded-md m-1 hover:rounded-xl"
-                    >
-                      Staff
-                    </button>
-                    <button
-                      onClick={() => promoteUser(user._id, "user")}
-                      className="border-2 border-yellow-700 bg-yellow-200 hover:bg-yellow-300 text-yellow-800 px-4 py-1 rounded-md m-1 hover:rounded-xl"
-                    >
-                      User
-                    </button>
-                  </td>
+                 
+                    <td className="px-4 py-2 flex flex-col ">
+                      <button
+                        onClick={() => promoteUser(user._id, "admin")}
+                        className="border-2 border-green-800 bg-green-200 hover:bg-green-300 text-green-800 px-3 py-1 m-1 rounded-md hover:rounded-xl"
+                      >
+                        Admin
+                      </button>
+                      <button
+                        onClick={() => promoteUser(user._id, "staff")}
+                        className="border-2 border-blue-700 bg-blue-200 hover:bg-blue-300 text-blue-800 px-4 py-1 rounded-md m-1 hover:rounded-xl"
+                      >
+                        Staff
+                      </button>
+                      <button
+                        onClick={() => promoteUser(user._id, "user")}
+                        className="border-2 border-yellow-700 bg-yellow-200 hover:bg-yellow-300 text-yellow-800 px-4 py-1 rounded-md m-1 hover:rounded-xl"
+                      >
+                        User
+                      </button>
+                    </td>
+                    </>
+                  )}
                 </tr>
               ))}
             </tbody>

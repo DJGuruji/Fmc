@@ -13,6 +13,8 @@ const Signup = () => {
     confirmPassword: '',
   });
 
+  const [error, setError] = useState(''); // State for handling errors
+
   const { name, mobile, email, password, confirmPassword } = formData;
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false); // Step 1: Loading state
@@ -25,11 +27,20 @@ const Signup = () => {
     e.preventDefault();
     setLoading(true); // Step 2: Set loading state to true during form submission
 
-    if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
-      setLoading(false); // Step 3: Ensure loading state is reset if validation fails
+    // Validate mobile number length
+    if (!/^\d{10}$/.test(mobile)) {
+      setError('Mobile number must be exactly 10 digits.');
+      setLoading(false); // Ensure loading state is reset if validation fails
       return;
     }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false); // Ensure loading state is reset if validation fails
+      return;
+    }
+
+    setError(''); // Clear any existing errors
 
     try {
       await axios.post('/auth/register', formData);
@@ -77,6 +88,7 @@ const Signup = () => {
               placeholder="Enter your mobile number"
             />
           </div>
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         </div>
         <div className="mb-4">
           <label className="block text-gray-700 mb-2" htmlFor="email">Email</label>

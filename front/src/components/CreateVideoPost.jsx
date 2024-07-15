@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { createVideoPost } from '../services/VideoPostService';
+import { toast } from 'react-toastify';
 
 const CreateVideoPost = () => {
   const [postName, setPostName] = useState('');
   const [video, setVideo] = useState(null);
   const [description, setDescription] = useState('');
+  const [loading, setLoading] = useState(false); // Loading state
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true
 
     const formData = new FormData();
     formData.append('postName', postName);
@@ -16,14 +19,16 @@ const CreateVideoPost = () => {
 
     try {
       await createVideoPost(formData);
-      alert('Video post created successfully!');
-      // Optionally reset form fields here
+      toast.success('Video posted successfully');
+      
       setPostName('');
       setVideo(null);
       setDescription('');
     } catch (error) {
-      alert('Error creating video post');
+      toast.error(error.message);
       console.error(error);
+    } finally {
+      setLoading(false); // Set loading to false when done
     }
   };
 
@@ -62,9 +67,11 @@ const CreateVideoPost = () => {
       <button
         type="submit"
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        disabled={loading} // Disable button when loading
       >
-        Create Video Post
+        {loading ? 'Uploading...' : 'Create Video Post'}
       </button>
+      {loading && <p className="text-blue-500 mt-2">Uploading video, please wait...</p>} {/* Loading message */}
     </form>
   );
 };

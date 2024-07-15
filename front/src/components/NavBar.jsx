@@ -222,7 +222,7 @@ const Navbar = () => {
                         Users
                       </Link>
                     </li>
-                    <li className="text-white self-center">
+                    {/* <li className="text-white self-center">
                       <Link
                         to="/services"
                         className="flex items-center hover:bg-zinc-600 rounded-xl"
@@ -230,7 +230,7 @@ const Navbar = () => {
                         <MdOutlineCleaningServices className="mr-1" />
                         Services
                       </Link>
-                    </li>
+                    </li> */}
                   </>
                 )}
                 <li className="text-white self-center">
@@ -334,7 +334,7 @@ const Navbar = () => {
                             <HiOutlineUsers /> Users
                           </Link>
                         </li>
-                        <li className="text-lg">
+                        {/* <li className="text-lg">
                           <Link
                             to="/services"
                             className="flex items-center"
@@ -342,7 +342,7 @@ const Navbar = () => {
                           >
                             <MdOutlineCleaningServices /> Services
                           </Link>
-                        </li>
+                        </li> */}
                       </>
                     )}
                     <li className="text-lg">

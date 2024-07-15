@@ -1,7 +1,7 @@
-// services/PostService.js
+
 import axios from '../axios';
 
-// Create a new post
+
 export const createPost = async (postData) => {
   const response = await axios.post('/posts', postData, {
     headers: {
@@ -11,7 +11,7 @@ export const createPost = async (postData) => {
   return response.data;
 };
 
-// Get all posts or posts by a specific user
+
 export const getPosts = async (userId) => {
   const response = await axios.get(`/posts`, {
     params: { userId }

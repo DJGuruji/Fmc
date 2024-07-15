@@ -5,7 +5,7 @@ const Settings = () => {
   return (
     <div>
       <ul>
-        <li className="mt-3">
+        <li className="mt-7 ">
           <Link
             to="/changepass"
             className="text-blue-600 font-bold hover:bg-zinc-300 p-2  rounded-xl "

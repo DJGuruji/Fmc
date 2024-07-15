@@ -5,6 +5,9 @@ import { useParams, Link } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { getPosts } from "../services/PostService";
 import config from "../config";
+import Modal from 'react-modal';
+
+Modal.setAppElement('#root'); 
 
 const UserProfileShow = () => {
   const { userId } = useParams();
@@ -22,7 +25,9 @@ const UserProfileShow = () => {
   const [posts, setPosts] = useState([]);
   const [showPosts, setShowPosts] = useState(false);
   const [showMore, setShowMore] = useState({});
-  const [loadingPosts, setLoadingPosts] = useState(false); 
+  const [loadingPosts, setLoadingPosts] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -51,7 +56,7 @@ const UserProfileShow = () => {
   }, [userId]);
 
   const fetchUserPosts = async () => {
-    setLoadingPosts(true); 
+    setLoadingPosts(true);
     try {
       const postsData = await getPosts(userId);
       setPosts(postsData);
@@ -59,7 +64,7 @@ const UserProfileShow = () => {
     } catch (error) {
       toast.error(`Error fetching user posts: ${error.message}`);
     } finally {
-      setLoadingPosts(false); 
+      setLoadingPosts(false);
     }
   };
 
@@ -70,26 +75,51 @@ const UserProfileShow = () => {
     }));
   };
 
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
-    <div className="flex justify-center items-center ">
+    <div className="flex justify-center items-center">
       <div className="md:w-3/4 lg:w-3/4 xl:w-3/4 mx-auto p-6 bg-white rounded-lg">
         <div className="text-center">
           {photo && (
-            <img
-              src={config.API_URL+`${photo}`}
-              alt="Profile"
-              className="mx-auto w-24 h-24 rounded-full object-cover mb-4"
-            />
+            <>
+              <img
+                src={config.API_URL + `${photo}`}
+                alt="Profile"
+                className="mx-auto w-24 h-24 rounded-full object-cover mb-4 cursor-pointer"
+                onClick={openModal}
+              />
+              <Modal
+                isOpen={isModalOpen}
+                onRequestClose={closeModal}
+                shouldCloseOnOverlayClick={true}
+                contentLabel="Enlarged Photo"
+                className="flex justify-center items-center bg-white rounded-full md:w-1/2 lg:w-1/2 xl:w-1/2 md:h-1/2 lg:h-1/2 xl:h-1/2"
+                overlayClassName="fixed inset-0 bg-black bg-opacity-100 flex justify-center items-center"
+              >
+                <div className="relative flex justify-center">
+                  <img
+                    src={config.API_URL + `${photo}`}
+                    alt="Enlarged Profile"
+                    className="rounded-full w-full h-full"
+                  />
+                </div>
+              </Modal>
+            </>
           )}
           <h2 className="text-3xl font-semibold mb-2">{name}</h2>
           <p className="text-gray-600 mb-4">{job}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-gray-700">
-              Contact Information
-            </h3>
-            <p className="text-gray-600 mt-5 ">
+            <h3 className="text-lg font-semibold text-gray-700">Contact Information</h3>
+            <p className="text-gray-600 mt-5">
               <strong>Email:</strong> {email}
             </p>
             <p className="text-gray-600 mt-2">
@@ -116,7 +146,7 @@ const UserProfileShow = () => {
           </div>
         </div>
         {user && user.email === email && (
-          <button className="border-2 border-blue-700 hover:bg-blue-300 bg-blue-200 text-blue-700 p-2 rounded-md hover:rounded-xl mt-5 ">
+          <button className="border-2 border-blue-700 hover:bg-blue-300 bg-blue-200 text-blue-700 p-2 rounded-md hover:rounded-xl mt-5">
             <Link to="/profile">Update profile</Link>
           </button>
         )}
@@ -134,9 +164,9 @@ const UserProfileShow = () => {
           <div className="container mx-auto p-4">
             <div className="space-y-4">
               {posts.map((post) => (
-                <div key={post._id} className="md:p-4 lg:p-4 xl:p-4  rounded-md ">
+                <div key={post._id} className="md:p-4 lg:p-4 xl:p-4 rounded-md">
                   <h4 className="text-xl font-semibold ml-16 p-5">{post.postName}</h4>
-                  <div className="md:flex lg:flex xl:flex ">
+                  <div className="md:flex lg:flex xl:flex">
                     <img
                       className="w-full h-full object-contain md:object-cover md:px-16 lg:px-16 xl:px-16"
                       src={`http://localhost:5000/${post.postImage}`}
