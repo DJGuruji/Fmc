@@ -6,8 +6,7 @@ import { useAuthStore } from "../store/authStore";
 import { getPosts } from "../services/PostService";
 import config from "../config";
 import Modal from "react-modal";
-import Followers from "../components/Followers";
-import Following from "../components/Following";
+
 
 Modal.setAppElement("#root");
 
@@ -32,8 +31,7 @@ const UserProfileShow = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
-  const [showFollowersModal, setShowFollowersModal] = useState(false);
-  const [showFollowingModal, setShowFollowingModal] = useState(false);
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -43,7 +41,7 @@ const UserProfileShow = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        console.log(response.data);
+        
         const userData = response.data;
         setName(userData.name);
         setEmail(userData.email);
@@ -159,35 +157,13 @@ const UserProfileShow = () => {
     }
   };
 
-  const fetchFollowers = async () => {
-    try {
-      const response = await axios.get(`users/followers/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      setShowFollowersModal(true);
-    } catch (error) {
-      toast.error(`Error fetching followers: ${error.message}`);
-    }
-  };
+  
 
-  const fetchFollowing = async () => {
-    try {
-      const response = await axios.get(`users/following/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      setShowFollowingModal(true);
-    } catch (error) {
-      toast.error(`Error fetching following: ${error.message}`);
-    }
-  };
+ 
 
   return (
     <div className="flex justify-center items-center">
-      <div className="md:w-3/4 lg:w-3/4 xl:w-3/4 mx-auto p-6 bg-white rounded-lg">
+      <div className="md:w-3/4 lg:w-3/4 xl:w-3/4 mx-auto p-6 bg-white rounded-lg ">
         <div className="text-center">
           {photo && (
             <>
@@ -215,13 +191,15 @@ const UserProfileShow = () => {
               </Modal>
             </>
           )}
-          <h2 className="text-3xl font-semibold mb-2">{name}</h2>
-          <p onClick={fetchFollowing} className="cursor-pointer text-blue-500">
+          <h2 className="text-3xl font-semibold mb-2 ">{name}</h2>
+          <div className="flex justify-center p-3">
+          <Link to={`/following/${userId}`}  className="cursor-pointer text-blue-500">
             {followingCount} Following
-          </p>
-          <p onClick={fetchFollowers} className="cursor-pointer text-blue-500">
+          </Link>
+          <Link to={`/followers/${userId}`} className="ml-5 cursor-pointer text-blue-500">
             {followersCount} Followers
-          </p>
+          </Link>
+          </div>
           {user &&
             user.email !== email &&
             (!isFollowing ? (
@@ -241,8 +219,9 @@ const UserProfileShow = () => {
             ))}
           <p className="text-gray-600 mb-4">{job}</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
+        {/* grid grid-cols-1 md:grid-cols-2 gap-4 */}
+        <div className=" md:flex lg:flex xl:flex  justify-center ">
+          <div className="m-2">
             <h3 className="text-lg font-semibold text-gray-700">Contact</h3>
             <p className="text-gray-600 mt-5">
               <strong>Email:</strong> {email}
@@ -253,7 +232,7 @@ const UserProfileShow = () => {
               </p>
             )}
           </div>
-          <div>
+          <div className="m-2">
             <h3 className="text-lg font-semibold text-gray-700">Location</h3>
             <p className="text-gray-600 mt-5">
               <strong>State:</strong> {state}
@@ -262,7 +241,7 @@ const UserProfileShow = () => {
               <strong>District:</strong> {district}
             </p>
           </div>
-          <div>
+          <div className="m-2">
             <h3 className="text-lg font-semibold text-gray-700">Office</h3>
             <p className="text-gray-600 mt-5">
               <strong>Office Name:</strong> {office}
@@ -272,13 +251,14 @@ const UserProfileShow = () => {
             </p>
           </div>
         </div>
-        {user && user.email === email && (
+   <div className="flex justify-center flex-wrap">
+   {user && user.email === email && (
           <>
-            <button className="hover:shadow-xl bg-blue-700 hover:bg-blue-800 text-white p-2 rounded-md hover:rounded-xl mt-5">
+            <button className="hover:shadow-xl bg-blue-700 hover:bg-blue-800 text-white py-1 px-2 rounded-md hover:rounded-xl mt-5">
               <Link to="/profile">Update profile</Link>
             </button>
             <button
-              className="hover:shadow-xl ml-3 bg-blue-700 hover:bg-blue-800 text-white p-2 rounded-md hover:rounded-xl mt-5"
+              className="hover:shadow-xl ml-3 bg-blue-700 hover:bg-blue-800 text-white py-1 px-2 rounded-md hover:rounded-xl mt-5"
               onClick={deleteProfilePhoto}
             >
               Remove Profile Picture
@@ -287,10 +267,11 @@ const UserProfileShow = () => {
         )}
         <button
           onClick={fetchUserPosts}
-          className="hover:shadow-xl py-2 px-6 rounded-md hover:rounded-xl mt-5 ml-3 bg-blue-700 hover:bg-blue-800 text-white"
+          className="hover:shadow-xl py-1 px-6 rounded-md hover:rounded-xl mt-5 ml-3 bg-blue-700 hover:bg-blue-800 text-white"
         >
           Posts
         </button>
+   </div>
         {loadingPosts ? (
           <p className="text-center mt-4">Loading posts...</p>
         ) : showPosts && posts.length === 0 ? (
@@ -328,25 +309,6 @@ const UserProfileShow = () => {
         ) : null}
       </div>
 
-      {/* Followers Modal */}
-      <Modal
-        isOpen={showFollowersModal}
-        onRequestClose={() => setShowFollowersModal(false)}
-        className="modal"
-        overlayClassName="overlay"
-      >
-        <Followers />
-      </Modal>
-
-      {/* Following Modal */}
-      <Modal
-        isOpen={showFollowingModal}
-        onRequestClose={() => setShowFollowingModal(false)}
-        className="modal"
-        overlayClassName="overlay"
-      >
-        <Following />
-      </Modal>
     </div>
   );
 };

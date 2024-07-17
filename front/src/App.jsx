@@ -50,8 +50,8 @@ const App = () => {
         <Route path="/profile" element={user ? <Profile /> : <Login />} />
         <Route path="/addwork" element={user ? <AddWork /> : <Login />} />
         <Route path="/posts" element={user ? <PostList /> : <Login />} />
-        <Route path="/followers" element={user ? <Followers /> : <Login />} />
-        <Route path="/following" element={user ? <Following /> : <Login />} />
+        <Route path="/followers/:userId" element={user ? <Followers /> : <Login />} />
+        <Route path="/following/:userId" element={user ? <Following /> : <Login />} />
         <Route path="/" element={<PostList />} />
         <Route
           path="/videoposts"

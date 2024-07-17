@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "../axios";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import config from "../config";
 
 const Followers = () => {
@@ -50,7 +51,8 @@ const Followers = () => {
     <div>
       <h2 className="text-xl font-semibold mb-2">Followers</h2>
       {followers.map((follower) => (
-        <div key={follower._id} className="follower-item flex items-center justify-between py-2 px-4 border-b">
+         <Link to={`/profile/${follower._id}`}>
+        <div key={follower._id} className="hover:bg-zinc-200 follower-item flex items-center justify-between py-2 px-4 border-b">
           <div className="flex items-center">
             {follower.photo && (
               <img
@@ -59,15 +61,24 @@ const Followers = () => {
                 className="w-10 h-10 rounded-full mr-3"
               />
             )}
-            <span>{follower.name}</span>
+            <span>
+           
+              <p>
+              {follower.name}
+              </p>
+              
+              </span>
+            
           </div>
-          <button
+          {/* <button
             onClick={() => toggleFollow(follower._id)}
             className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded-md"
           >
             {follower.isFollowing ? "Following" : "Follow"}
-          </button>
+          </button> */}
+
         </div>
+        </Link>
       ))}
     </div>
   );

@@ -169,6 +169,9 @@ const Navbar = () => {
                   user.role === "admin" ||
                   user.role === "staff") && (
                   <>
+                  <li className="text-zinc-400 self-center font-sans">
+                      Hello {user.name}
+                    </li>
                     <li className="text-white self-center">
                       <Link
                         to="/"
