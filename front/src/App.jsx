@@ -25,7 +25,8 @@ import { useAuthStore } from "./store/authStore";
 import Navbar from "./components/NavBar";
 import UserProfileShow from "./pages/UserProfileShow";
 import DeleteAcc from "./components/DeleteAcc";
-
+import Followers from "./components/Followers";
+import Following from "./components/Following";
 import PasswordChange from "./components/PasswordReset";
 
 const App = () => {
@@ -49,6 +50,8 @@ const App = () => {
         <Route path="/profile" element={user ? <Profile /> : <Login />} />
         <Route path="/addwork" element={user ? <AddWork /> : <Login />} />
         <Route path="/posts" element={user ? <PostList /> : <Login />} />
+        <Route path="/followers" element={user ? <Followers /> : <Login />} />
+        <Route path="/following" element={user ? <Following /> : <Login />} />
         <Route path="/" element={<PostList />} />
         <Route
           path="/videoposts"

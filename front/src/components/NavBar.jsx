@@ -103,7 +103,7 @@ const Navbar = () => {
                       View Profile
                     </Link>
                   </li>
-                  <li className="p-2">
+                  {/* <li className="p-2">
                     <Link
                       to="/connections"
                       onClick={toggleSubmenu}
@@ -122,7 +122,7 @@ const Navbar = () => {
                       <FcLike className="mr-1" />
                       Wish List
                     </Link>
-                  </li>
+                  </li> */}
                   <li className="p-2">
                     <Link
                       to="/settings"

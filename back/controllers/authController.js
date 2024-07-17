@@ -187,8 +187,6 @@ const forgotPassword = async (req, res) => {
 const resetPassword =  async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
-  console.log(req.body);
-  console.log(req.params.userId);
 
   try {
     const user = await User.findById(req.params.userId);

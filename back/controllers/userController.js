@@ -14,6 +14,7 @@ const storage = multer.diskStorage({
   },
 });
 
+
 const upload = multer({
   storage: storage,
   limits: { fileSize: 5000000 },
@@ -39,71 +40,10 @@ const generateToken = (id) => {
 };
 
 
-
-
-// const updateUserProfile = async (req, res) => {
-//   upload(req, res, async (err) => {
-//     if (err) {
-//       // A Multer error occurred when uploading
-//       console.error("Multer error:", err);
-//       return res.status(400).json({ message: "Error uploading file", error: err });
-//     }
-
-//     if (!req.file) {
-     
-//       return res.status(400).json({ message: "No file uploaded" });
-//     }
-
-//     try {
-//       const user = await User.findById(req.params.userId);
-//       console.log(req.file.path);
-
-//       if (!user) {
-//         return res.status(404).json({ message: "User not found" });
-//       }
-
-//       console.log("Incoming request data:", req.body);
-
-//       user.name = req.body.name ?? user.name;
-//       user.mobile = req.body.mobile ?? user.mobile;
-//       user.email = req.body.email ?? user.email;
-//       user.photo = req.file.path ?? user.photo; 
-//       user.state = req.body.state ?? user.state;
-//       user.job = req.body.job ?? user.job;
-//       user.district = req.body.district ?? user.district;
-//       user.office = req.body.office ?? user.office;
-//       user.officePlace = req.body.officePlace ?? user.officePlace;
-
-//       console.log("Updated user data:", user);
-
-//       const updatedUser = await user.save();
-
-//       return res.json({
-//         _id: updatedUser._id,
-//         name: updatedUser.name,
-//         email: updatedUser.email,
-//         mobile: updatedUser.mobile,
-//         photo: updatedUser.photo,
-//         state: updatedUser.state,
-//         job: updatedUser.job,
-//         district: updatedUser.district,
-//         office: updatedUser.office,
-//         officePlace: updatedUser.officePlace,
-//         role: updatedUser.role,
-//         token: generateToken(updatedUser._id), // Ensure this function is secure
-//       });
-//     } catch (error) {
-//       console.error("Error updating user profile:", error);
-//       return res.status(500).json({ message: "Failed to update profile", error });
-//     }
-//   });
-// };
-
-
 const updateUserProfile = async (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
-      // A Multer error occurred when uploading
+     
       console.error("Multer error:", err);
       return res.status(400).json({ message: "Error uploading file", error: err });
     }
@@ -115,12 +55,12 @@ const updateUserProfile = async (req, res) => {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Update user data based on request body
+    
       user.name = req.body.name ?? user.name;
       user.mobile = req.body.mobile ?? user.mobile;
       user.email = req.body.email ?? user.email;
       
-      // Check if photo was uploaded; if not, retain the existing photo
+     
       if (req.file) {
         user.photo = req.file.path;
       }
@@ -138,7 +78,7 @@ const updateUserProfile = async (req, res) => {
         name: updatedUser.name,
         email: updatedUser.email,
         mobile: updatedUser.mobile,
-        photo: updatedUser.photo, // Return the updated photo path
+        photo: updatedUser.photo, 
         state: updatedUser.state,
         job: updatedUser.job,
         district: updatedUser.district,
@@ -154,7 +94,35 @@ const updateUserProfile = async (req, res) => {
   });
 };
 
+const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id)
+      .populate('followers', 'name') // Optional: to include followers' names
+      .populate('following', 'name'); // Optional: to include following users' names
 
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      mobile: user.mobile,
+      photo: user.photo,
+      state: user.state,
+      job: user.job,
+      district: user.district,
+      office: user.office,
+      officePlace: user.officePlace,
+      followersCount: user.followers.length,
+      followingCount: user.following.length
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 
 const deleteAccount = async (req, res) => {
@@ -190,7 +158,7 @@ const userSearch = async (req, res) => {
     const users = await User.find({
       $or: [
         { username: { $regex: query, $options: "i" } },
-        { email: { $regex: query, $options: "i" } },
+        { job: { $regex: query, $options: "i" } },
         { officePlace: { $regex: query, $options: "i" } },
         { district: { $regex: query, $options: "i" } },
         { state: { $regex: query, $options: "i" } },
@@ -203,9 +171,114 @@ const userSearch = async (req, res) => {
   }
 };
 
+const deleteProfilePhoto = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.photo = ""; 
+    await user.save();
+
+    res.status(200).json({ message: 'Profile photo deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+
+const follow = async (req, res) => {
+  try {
+    const userToFollow = await User.findById(req.params.userId);
+    const currentUser = await User.findById(req.user._id);
+
+    if (!userToFollow) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (currentUser.following.includes(userToFollow._id)) {
+      return res.status(400).json({ message: 'You are already following this user' });
+    }
+
+    currentUser.following.push(userToFollow._id);
+    userToFollow.followers.push(currentUser._id);
+
+    await currentUser.save();
+    await userToFollow.save();
+
+    res.status(200).json({ message: 'User followed successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+
+
+
+
+const unfollow = async (req, res) => {
+  try {
+    const userToUnfollow = await User.findById(req.params.userId);
+    const currentUser = await User.findById(req.user._id);
+
+    if (!userToUnfollow) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (!currentUser.following.includes(userToUnfollow._id)) {
+      return res.status(400).json({ message: 'You are not following this user' });
+    }
+
+    currentUser.following = currentUser.following.filter(
+      (userId) => userId.toString() !== userToUnfollow._id.toString()
+    );
+    userToUnfollow.followers = userToUnfollow.followers.filter(
+      (userId) => userId.toString() !== currentUser._id.toString()
+    );
+
+    await currentUser.save();
+    await userToUnfollow.save();
+
+    res.status(200).json({ message: 'User unfollowed successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+const getFollowers = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId).populate('followers', 'name photo');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user.followers);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const getFollowing = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId).populate('following', 'name photo');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user.following);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 module.exports = {
   updateUserProfile,
-
   deleteAccount,
   userSearch,
+  getProfile,
+  deleteProfilePhoto,
+  follow,
+  unfollow,
+  getFollowing,
+  getFollowers
 };

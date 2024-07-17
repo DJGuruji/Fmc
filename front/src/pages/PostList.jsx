@@ -80,7 +80,7 @@ const PostList = () => {
               </button>
               <button
                 onClick={() => deletePostHandler(post._id)}
-                className="bg-red-300 hover:bg-red-400 text-red-700 px-3 py-1 rounded-md hover:rounded-xl border-2 border-red-700"
+               className="hover:bg-red-600 text-white bg-red-500  t px-3 py-1 rounded-md hover:rounded-xl border-2 border-red-700"
               >
                 Delete Post
               </button>

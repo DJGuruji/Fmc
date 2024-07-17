@@ -62,6 +62,7 @@ const PasswordReset = () => {
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               required
+              placeholder='Enter Current Password'
             />
           </div>
           <div className="mb-4">
@@ -73,6 +74,7 @@ const PasswordReset = () => {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
+              placeholder='Enter New Password'
             />
           </div>
           <div className="mb-4">
@@ -84,6 +86,7 @@ const PasswordReset = () => {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
+              placeholder='Confirm New Password'
             />
           </div>
           <button

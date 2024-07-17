@@ -35,11 +35,11 @@ const Settings = () => {
           </p>
           <div className="modal-action flex">
             <form method="dialog">
-              <button className="btn bg-blue-500 p-2 text-white rounded-md hover:rounded-xl border-2 border-blue-700 hover:bg-blue-400">
+              <button className="btn bg-blue-600 p-2 text-white rounded-md hover:rounded-xl border-2 border-blue-700 hover:bg-blue-700">
                 Cancel
               </button>
             </form>
-            <button className=" ml-5 bg-red-500 text-white rounded-md hover:rounded-xl p-2">
+            <button className=" ml-5 bg-red-600 hover:bg-red-700 text-white rounded-md hover:rounded-xl p-2">
               <Link to="/deleteacc" className="text-center flex items-center">
                 Delete Account
               </Link>

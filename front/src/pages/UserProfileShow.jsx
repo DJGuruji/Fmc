@@ -5,14 +5,16 @@ import { useParams, Link } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { getPosts } from "../services/PostService";
 import config from "../config";
-import Modal from 'react-modal';
+import Modal from "react-modal";
+import Followers from "../components/Followers";
+import Following from "../components/Following";
 
-Modal.setAppElement('#root'); 
+Modal.setAppElement("#root");
 
 const UserProfileShow = () => {
   const { userId } = useParams();
   const { user } = useAuthStore();
-
+  // State variables
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
@@ -27,6 +29,11 @@ const UserProfileShow = () => {
   const [showMore, setShowMore] = useState({});
   const [loadingPosts, setLoadingPosts] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followersCount, setFollowersCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [showFollowersModal, setShowFollowersModal] = useState(false);
+  const [showFollowingModal, setShowFollowingModal] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -36,7 +43,7 @@ const UserProfileShow = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        console.log(response.data)
+        console.log(response.data);
         const userData = response.data;
         setName(userData.name);
         setEmail(userData.email);
@@ -47,13 +54,16 @@ const UserProfileShow = () => {
         setOffice(userData.office || "");
         setOfficePlace(userData.officePlace || "");
         setPhoto(userData.photo || null);
+        setIsFollowing(userData.followers.includes(user._id)); // Check if the logged-in user is following this profile user
+        setFollowersCount(userData.followers.length);
+        setFollowingCount(userData.following.length);
       } catch (error) {
         toast.error(`Error fetching user profile: ${error.message}`);
       }
     };
 
     fetchUserData();
-  }, [userId]);
+  }, [userId, user._id]);
 
   const fetchUserPosts = async () => {
     setLoadingPosts(true);
@@ -83,6 +93,98 @@ const UserProfileShow = () => {
     setIsModalOpen(false);
   };
 
+  const deleteProfilePhoto = async () => {
+    try {
+      const response = await axios.delete("users/profilephoto/delete", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (response.status === 200) {
+        console.log("Profile photo deleted successfully");
+        toast.success("profile photo deleted");
+      }
+    } catch (error) {
+      console.error("Error deleting profile photo", error);
+      toast.error("error deleting profile photo");
+    }
+  };
+
+  const followUser = async (userId) => {
+    try {
+      const response = await axios.post(
+        `users/follow/${userId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success("followed successfully");
+        console.log("User followed successfully");
+        setIsFollowing(true); // Update the following status
+        setFollowersCount((prevCount) => prevCount + 1); // Increment followers count
+      }
+    } catch (error) {
+      toast.error("Error following user");
+      console.error("Error following user", error);
+    }
+  };
+
+  const unfollowUser = async (userId) => {
+    try {
+      const response = await axios.post(
+        `users/unfollow/${userId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success("Unfollowed");
+        console.log("User unfollowed successfully");
+        setIsFollowing(false); // Update the following status
+        setFollowersCount((prevCount) => prevCount - 1); // Decrement followers count
+      }
+    } catch (error) {
+      console.error("Error unfollowing user", error);
+      toast.error("Error Unfollowing");
+    }
+  };
+
+  const fetchFollowers = async () => {
+    try {
+      const response = await axios.get(`users/followers/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setShowFollowersModal(true);
+    } catch (error) {
+      toast.error(`Error fetching followers: ${error.message}`);
+    }
+  };
+
+  const fetchFollowing = async () => {
+    try {
+      const response = await axios.get(`users/following/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setShowFollowingModal(true);
+    } catch (error) {
+      toast.error(`Error fetching following: ${error.message}`);
+    }
+  };
+
   return (
     <div className="flex justify-center items-center">
       <div className="md:w-3/4 lg:w-3/4 xl:w-3/4 mx-auto p-6 bg-white rounded-lg">
@@ -101,7 +203,7 @@ const UserProfileShow = () => {
                 shouldCloseOnOverlayClick={true}
                 contentLabel="Enlarged Photo"
                 className="flex justify-center items-center bg-white rounded-full md:w-1/2 lg:w-1/2 xl:w-1/2 md:h-1/2 lg:h-1/2 xl:h-1/2"
-                overlayClassName="fixed inset-0 bg-black bg-opacity-100 flex justify-center items-center"
+                overlayClassName="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center"
               >
                 <div className="relative flex justify-center">
                   <img
@@ -114,17 +216,42 @@ const UserProfileShow = () => {
             </>
           )}
           <h2 className="text-3xl font-semibold mb-2">{name}</h2>
+          <p onClick={fetchFollowing} className="cursor-pointer text-blue-500">
+            {followingCount} Following
+          </p>
+          <p onClick={fetchFollowers} className="cursor-pointer text-blue-500">
+            {followersCount} Followers
+          </p>
+          {user &&
+            user.email !== email &&
+            (!isFollowing ? (
+              <button
+                onClick={() => followUser(userId)}
+                className="bg-blue-600 hover:bg-blue-700 p-1 rounded-md text-white m-2"
+              >
+                Follow
+              </button>
+            ) : (
+              <button
+                onClick={() => unfollowUser(userId)}
+                className="bg-blue-600 hover:bg-blue-700 p-1 rounded-md text-white m-2"
+              >
+                Following
+              </button>
+            ))}
           <p className="text-gray-600 mb-4">{job}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-gray-700">Contact Information</h3>
+            <h3 className="text-lg font-semibold text-gray-700">Contact</h3>
             <p className="text-gray-600 mt-5">
               <strong>Email:</strong> {email}
             </p>
-            <p className="text-gray-600 mt-2">
-              <strong>Mobile:</strong> {mobile}
-            </p>
+            {mobile && (
+              <p className="text-gray-600 mt-2">
+                <strong>Mobile:</strong> {mobile}
+              </p>
+            )}
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-700">Location</h3>
@@ -146,13 +273,21 @@ const UserProfileShow = () => {
           </div>
         </div>
         {user && user.email === email && (
-          <button className="border-2 border-blue-700 hover:bg-blue-300 bg-blue-200 text-blue-700 p-2 rounded-md hover:rounded-xl mt-5">
-            <Link to="/profile">Update profile</Link>
-          </button>
+          <>
+            <button className="hover:shadow-xl bg-blue-700 hover:bg-blue-800 text-white p-2 rounded-md hover:rounded-xl mt-5">
+              <Link to="/profile">Update profile</Link>
+            </button>
+            <button
+              className="hover:shadow-xl ml-3 bg-blue-700 hover:bg-blue-800 text-white p-2 rounded-md hover:rounded-xl mt-5"
+              onClick={deleteProfilePhoto}
+            >
+              Remove Profile Picture
+            </button>
+          </>
         )}
         <button
           onClick={fetchUserPosts}
-          className="p-2 rounded-md hover:rounded-xl mt-5 ml-3 bg-blue-200 border-2 border-blue-700 hover:bg-blue-300 text-blue-700"
+          className="hover:shadow-xl py-2 px-6 rounded-md hover:rounded-xl mt-5 ml-3 bg-blue-700 hover:bg-blue-800 text-white"
         >
           Posts
         </button>
@@ -192,6 +327,26 @@ const UserProfileShow = () => {
           </div>
         ) : null}
       </div>
+
+      {/* Followers Modal */}
+      <Modal
+        isOpen={showFollowersModal}
+        onRequestClose={() => setShowFollowersModal(false)}
+        className="modal"
+        overlayClassName="overlay"
+      >
+        <Followers />
+      </Modal>
+
+      {/* Following Modal */}
+      <Modal
+        isOpen={showFollowingModal}
+        onRequestClose={() => setShowFollowingModal(false)}
+        className="modal"
+        overlayClassName="overlay"
+      >
+        <Following />
+      </Modal>
     </div>
   );
 };

@@ -1,21 +1,20 @@
 // routes/videoPostRoutes.js
 const express = require('express');
 const router = express.Router();
+const {protect} = require("../middleware/authMiddleware")
 const videoPostController = require('../controllers/videoPostController');
 
-// Create a new video post
-router.post('/', videoPostController.createVideoPost);
+router.post('/',protect,videoPostController.createVideoPost);
 
-// Get all video posts or video posts by a specific user
-router.get('/', videoPostController.getVideoPosts);
 
-// Get a single video post by ID
-router.get('/:id', videoPostController.getVideoPostById);
+router.get('/',protect, videoPostController.getVideoPosts);
 
-// Update a video post
-router.put('/:id', videoPostController.updateVideoPost);
 
-// Delete a video post
-router.delete('/:id', videoPostController.deleteVideoPost);
+router.get('/:id',protect, videoPostController.getVideoPostById);
+
+router.put('/:id',protect, videoPostController.updateVideoPost);
+
+
+router.delete('/:id',protect, videoPostController.deleteVideoPost);
 
 module.exports = router;

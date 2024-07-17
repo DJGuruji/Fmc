@@ -18,6 +18,8 @@ const UserSchema = new mongoose.Schema({
   district: { type: String, default: "" },
   office: { type: String, default: "" },
   officePlace: { type: String, default: "" },
+  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 });

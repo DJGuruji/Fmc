@@ -110,12 +110,13 @@ const Users = () => {
       <h1 className="text-center text-zinc-800 mb-4 text-xl">All Users </h1>
 
       <div className="mb-4">
+        <label className="text-xl text-zinc-500 ">Filter </label>
         <input
           type="text"
           value={searchQuery}
           onChange={handleSearchChange}
-          placeholder="Search by name or email..."
-          className="md:w-1/4 lg:w-1/4 xl:w-1/4  border-2 border-blue-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="Search by name or email or role..."
+          className="md:w-1/4 lg:w-1/4 xl:w-1/4 w-full  border-2 border-blue-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
 
@@ -168,7 +169,7 @@ const Users = () => {
                     <td className="px-4 py-2">
                     <button
                       onClick={() => deleteUser(user._id)}
-                      className="border-2 border-red-800 bg-red-200 hover:bg-red-300 text-red-800 px-3 py-1 rounded-md hover:rounded-xl"
+                      className="border-2 border-red-800 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md hover:rounded-xl"
                     >
                       Delete
                     </button>
@@ -177,19 +178,19 @@ const Users = () => {
                     <td className="px-4 py-2 flex flex-col ">
                       <button
                         onClick={() => promoteUser(user._id, "admin")}
-                        className="border-2 border-green-800 bg-green-200 hover:bg-green-300 text-green-800 px-3 py-1 m-1 rounded-md hover:rounded-xl"
+                        className="border-2 border-green-600 bg-green-500 hover:bg-green-600 text-white  px-3 py-1 m-1 rounded-md hover:rounded-xl"
                       >
                         Admin
                       </button>
                       <button
                         onClick={() => promoteUser(user._id, "staff")}
-                        className="border-2 border-blue-700 bg-blue-200 hover:bg-blue-300 text-blue-800 px-4 py-1 rounded-md m-1 hover:rounded-xl"
+                        className="border-2 border-blue-700 bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-md m-1 hover:rounded-xl"
                       >
                         Staff
                       </button>
                       <button
                         onClick={() => promoteUser(user._id, "user")}
-                        className="border-2 border-yellow-700 bg-yellow-200 hover:bg-yellow-300 text-yellow-800 px-4 py-1 rounded-md m-1 hover:rounded-xl"
+                        className="border-2 border-yellow-500 bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-1 rounded-md m-1 hover:rounded-xl"
                       >
                         User
                       </button>

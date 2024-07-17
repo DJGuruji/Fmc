@@ -1,37 +1,69 @@
-// controllers/videoPostController.js
 const VideoPost = require("../models/VideoPost");
 const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("cloudinary").v2;
 const path = require("path");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/uploads/videos");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname); // Rename uploaded video file if needed
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'videos',
+    resource_type: 'video',
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 50000000 }, // Limit file size to 50MB
+  fileFilter: (req, file, cb) => {
+    const filetypes = /mp4|mov|avi|wmv/;
+    const extname = filetypes.test(file.originalname.toLowerCase());
+    const mimetype = filetypes.test(file.mimetype);
+    if (extname && mimetype) {
+      return cb(null, true);
+    } else {
+      cb('Error: Videos Only!');
+    }
+  },
+}).single('video');
 
-// Create a new video post
-(exports.createVideoPost = upload.single("video")),
+
+exports.createVideoPost = [
+  upload,
   async (req, res) => {
     try {
       const { postName, description } = req.body;
+
+      // Ensure that the file was uploaded to Cloudinary
+      if (!req.file) {
+        return res.status(400).json({ message: 'Video upload failed' });
+      }
+
       const newVideoPost = new VideoPost({
-        user: req.user._id, // Assuming you have user information in req.user
+        user: req.user._id,
         postName,
         description,
-        video: req.file.path, // Save video path after multer has saved it
+        video: req.file.path, // Cloudinary URL
       });
 
       const savedVideoPost = await newVideoPost.save();
+
       res.status(201).json(savedVideoPost);
     } catch (err) {
+      console.error(err); // Log the error to the server console
       res.status(500).json({ message: err.message });
     }
-  };
+  },
+];
+
+
+
 
 // Get all video posts
 exports.getVideoPosts = async (req, res) => {
