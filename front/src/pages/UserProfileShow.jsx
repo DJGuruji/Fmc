@@ -43,6 +43,7 @@ const UserProfileShow = () => {
         });
         
         const userData = response.data;
+        console.log(userData)
         setName(userData.name);
         setEmail(userData.email);
         setMobile(userData.mobile || "");
@@ -192,6 +193,7 @@ const UserProfileShow = () => {
             </>
           )}
           <h2 className="text-3xl font-semibold mb-2 ">{name}</h2>
+          <p className="text-gray-600 ">{job}</p>
           <div className="flex justify-center p-3">
           <Link to={`/following/${userId}`}  className="cursor-pointer text-blue-500">
             {followingCount} Following
@@ -217,7 +219,7 @@ const UserProfileShow = () => {
                 Following
               </button>
             ))}
-          <p className="text-gray-600 mb-4">{job}</p>
+          
         </div>
         {/* grid grid-cols-1 md:grid-cols-2 gap-4 */}
         <div className=" md:flex lg:flex xl:flex  justify-center ">

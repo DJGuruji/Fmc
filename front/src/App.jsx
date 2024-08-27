@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
 import Profile from "./pages/Profile";
-
+import AIChat from "./components/AiChat";
 import Home from "./pages/Home";
 import AddWork from "./pages/AddWork";
 
@@ -60,6 +60,7 @@ const App = () => {
         <Route path="/myvideo" element={user ? <MyVideo /> : <Login />} />
         <Route path="/createpost" element={user ? <CreatePost /> : <Login />} />
         <Route path="/deleteacc" element={user ? <DeleteAcc /> : <Login />} />
+        <Route path="/ai" element={user ? <AIChat /> : <Login />} />
         <Route
           path="/createvideopost"
           element={user ? <CreateVideoPost /> : <Login />}

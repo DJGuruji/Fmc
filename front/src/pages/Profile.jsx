@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "../axios";
 import { toast } from "react-toastify";
+import config from "../config";
 
 const Profile = () => {
   const [userId, setUserId] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
-  const [photo, setPhoto] = useState(null); // Change to null to handle file input correctly
+  const [photo, setPhoto] = useState(null);
   const [state, setState] = useState("");
   const [job, setJob] = useState("");
   const [district, setDistrict] = useState("");
@@ -53,7 +54,7 @@ const Profile = () => {
       formData.append("email", email);
       formData.append("mobile", mobile);
       if (photo) {
-        formData.append("postImage", photo); // Use 'postImage' to match Multer configuration
+        formData.append("postImage", photo);
       }
       formData.append("state", state);
       formData.append("job", job);
@@ -86,9 +87,43 @@ const Profile = () => {
     );
   }
 
+  const handleFileClick = () => {
+    document.getElementById("fileInput").click();
+  };
+
   return (
     <div className="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-semibold mb-6 text-center">Update Profile</h2>
+      <div className="relative inline-block w-24 h-24">
+        <input
+          type="file"
+          accept="image/*"
+          id="fileInput"
+          onChange={(e) => setPhoto(e.target.files[0])}
+          className="hidden"
+        />
+        <div
+          className="absolute inset-0 flex items-center justify-center bg-gray-200 rounded-full overflow-hidden cursor-pointer"
+          onClick={handleFileClick}
+        >
+          {photo ? (
+            <img
+              src={config.API_URL + `${photo}`}
+              alt="Profile"
+              className="object-cover w-full h-full rounded-full"
+            />
+          ) : (
+            <div className=" w-5 h-2 px-5 text-4xl text-gray-500">+</div>
+          )}
+        </div>
+        <div
+          className="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full p-1 cursor-pointer"
+          onClick={handleFileClick}
+        >
+          +
+        </div>
+      </div>
+
       <form onSubmit={handleUpdateProfile} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700">Name:</label>
@@ -118,17 +153,8 @@ const Profile = () => {
             type="text"
             value={mobile}
             onChange={(e) => setMobile(e.target.value)}
-            placeholder="enter mobile number"
+            placeholder="Enter mobile number"
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Photo:</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setPhoto(e.target.files[0])}
-            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
           />
         </div>
         <div>
