@@ -4,6 +4,11 @@ const nodemailer = require("nodemailer");
 const multer = require("multer");
 const path = require("path");
 const bcrypt = require("bcrypt");
+const dotenv = require("dotenv");
+const axios = require('axios');
+
+dotenv.config();
+
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -272,6 +277,48 @@ const getFollowing = async (req, res) => {
   }
 };
 
+const postOpenai = async (req, res) => {
+  const { prompt } = req.body;
+
+  try {
+    const response = await axios.post(
+      'https://api.openai.com/v1/chat/completions',
+      {
+        model: "gpt-3.5-turbo", 
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 150,
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (response.data && response.data.choices && response.data.choices[0].message) {
+      res.json({ message: response.data.choices[0].message.content.trim() });
+    } else {
+      console.error('Unexpected response structure:', response.data);
+      res.status(500).json({ error: 'Unexpected response structure from OpenAI API' });
+    }
+  } catch (error) {
+    if (error.response) {
+      console.error('Error response from OpenAI API:', error.response.data);
+      res.status(500).json({ error: 'Error from OpenAI API', details: error.response.data });
+    } else if (error.request) {
+      console.error('No response received from OpenAI API:', error.request);
+      res.status(500).json({ error: 'No response from OpenAI API' });
+    } else {
+      console.error('Error setting up request to OpenAI API:', error.message);
+      res.status(500).json({ error: 'Failed to send request to OpenAI API', details: error.message });
+    }
+  }
+};
+
+
+
+
 module.exports = {
   updateUserProfile,
   deleteAccount,
@@ -281,5 +328,6 @@ module.exports = {
   follow,
   unfollow,
   getFollowing,
-  getFollowers
+  getFollowers,
+  postOpenai
 };

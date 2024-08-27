@@ -140,7 +140,8 @@ const forgotPassword = async (req, res) => {
 
   await user.save();
 
-  const resetUrl = `API/auth/passwordreset/${resetToken}`;
+  // const resetUrl = `API/auth/passwordreset/${resetToken}`;
+  const resetUrl = `api/auth/passwordreset/${resetToken}`;
 
   const message = `
     <h1>You have requested a password reset</h1>
@@ -220,10 +221,6 @@ const resetPassword =  async (req, res) => {
 module.exports = {
   registerUser,
   loginUser,
-
   forgotPassword,
-
   resetPassword,
-
-
 };

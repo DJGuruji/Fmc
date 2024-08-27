@@ -10,6 +10,8 @@ dotenv.config();
 connectDB();
 const app = express();
 
+
+
 app.use(cors());
 // Middleware
 app.use(express.json());
@@ -38,10 +40,28 @@ app.use((req, res, next) => {
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/users",require("./routes/userRoutes"))
+app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/posts", require("./routes/postRoutes"));
 app.use("/api/videoposts", require("./routes/videoPostRoutes"));
-app.use("/api/admin",require("./routes/adminRoutes"))
+app.use("/api/admin", require("./routes/adminRoutes"));
+
+// Example route for OpenAI API
+app.post('/api/generate-response', async (req, res) => {
+  const { prompt } = req.body;
+
+  try {
+    const response = await openai.createCompletion({
+      model: "text-davinci-003",
+      prompt: prompt,
+      max_tokens: 150,
+    });
+
+    res.json({ message: response.data.choices[0].text.trim() });
+  } catch (error) {
+    console.error("Error generating response:", error);
+    res.status(500).json({ error: 'Failed to generate response' });
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 

@@ -8,7 +8,8 @@ const {
   follow,
   unfollow,
   getFollowers,
-  getFollowing
+  getFollowing,
+  postOpenai
 
 } = require("../controllers/userController");
 const { protect } = require("../middleware/authMiddleware");
@@ -24,6 +25,7 @@ router.post("/unfollow/:userId",protect,unfollow);
 router.get("/profile",protect,getProfile);
 router.get("/followers/:userId",protect,getFollowers);
 router.get("/following/:userId",protect,getFollowing);
+router.post("/generate-response",protect,postOpenai)
 // router.get("/profile", protect, (req, res) => {
 //   res.json({
 //     _id: req.user._id,
