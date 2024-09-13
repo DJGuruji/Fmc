@@ -52,7 +52,7 @@ const UserSearch = () => {
           {results.map((user) => (
             <li key={user._id} className="p-2 hover:bg-gray-100 cursor-pointer text-blue-500 hover:underline">
               <Link to={`/profile/${user._id}`} className="block" onClick={handleResultClick}>
-                {user.name} - {user.job}-{user.officePlace}-{user.district}-{user.state}-{user.email}
+                {user.name} -{user.mobile}- {user.job}-{user.officePlace}-{user.district}-{user.state}-{user.email}
               </Link>
             </li>
           ))}

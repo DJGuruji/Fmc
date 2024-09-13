@@ -163,6 +163,7 @@ const userSearch = async (req, res) => {
     const users = await User.find({
       $or: [
         { name: { $regex: query, $options: "i" } },
+        { mobile: { $regex: query, $options: "i" } },
         { email: { $regex: query, $options: "i" } },
         { job: { $regex: query, $options: "i" } },
         { officePlace: { $regex: query, $options: "i" } },

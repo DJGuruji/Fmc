@@ -11,15 +11,21 @@ function AIChat() {
     try {
       const result = await axios.post('/users/generate-response', { prompt });
       setResponse(result.data.message);
-    } catch (error) {
-      toast.error("Error generating response:", error);
+    }catch (error) {
+    
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        
+        toast.error("An unexpected error occurred. Please try again later.");
+      }
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-4">AI Chat</h1>
+        <h1 className="text-2xl font-semibold text-gray-800 mb-4">Guruji AI</h1>
         <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
           <input
             type="text"
@@ -32,7 +38,7 @@ function AIChat() {
             type="submit"
             className="p-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
           >
-            Submit
+            Generate
           </button>
         </form>
         {response && (
