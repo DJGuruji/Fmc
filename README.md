@@ -2,9 +2,10 @@
 
 This is a simple calculator application that allows users to perform basic arithmetic operations.
 
+<img src="https://github.com/DJGuruji/Fmc/blob/main/assets/img3.jpeg?raw=true" alt="FMC" width="800" height="500">
 <img src="https://github.com/DJGuruji/Fmc/blob/main/assets/img1.jpeg?raw=true" alt="FMC" width="800" height="500">
 <img src="https://github.com/DJGuruji/Fmc/blob/main/assets/img2.jpeg?raw=true" alt="FMC" width="800" height="500">
-<img src="https://github.com/DJGuruji/Fmc/blob/main/assets/img3.jpeg?raw=true" alt="FMC" width="800" height="500">
+
 
 
 ## Installation
