@@ -1,6 +1,6 @@
-# CALCULATOR
+# Find My Client
 
-This is a simple calculator application that allows users to perform basic arithmetic operations.
+FMC allows users to: - Register profiles based on  Proffesion type. - Upload work samples via posts or videos. - Find Professionals or clients based on location preferences. - Follow Professionals or client profiles to track potential hires or employers.
 
 <img src="https://github.com/DJGuruji/Fmc/blob/main/assets/img3.jpeg?raw=true" alt="FMC" width="800" height="500">
 <img src="https://github.com/DJGuruji/Fmc/blob/main/assets/img1.jpeg?raw=true" alt="FMC" width="800" height="500">
