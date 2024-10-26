@@ -31,6 +31,25 @@ npm install
 npm run dev
 ```
 
+# .env for backend
+
+```bash
+
+MONGO_URI=
+OPENAI_API_KEY=
+JWT_SECRET=
+SMTP_HOST=
+SMTP_PORT=
+SMTP_USER=
+EMAIL_PASS=
+PORT=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+
+```
+
 
 
 
