@@ -64,7 +64,8 @@ const PostList = () => {
               <h2 className="text-xl font-bold mb-2 text-center">{post.postName}</h2>
               <img
                 className="w-full h-full object-contain md:object-cover md:px-16 lg:px-16 xl:px-16"
-                src={config.API_URL+`${post.postImage}`}
+                // src={config.API_URL+`${post.postImage}`}
+                src={post.postImage}
                 alt={post.postName}
               />
             </div>

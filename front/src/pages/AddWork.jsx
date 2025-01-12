@@ -2,31 +2,30 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 
-
 const AddWork = () => {
   const navigate = useNavigate();
   return (
     
-    <div className='h-screen flex justify-center items-center ' >
-    <div  className='bg-zinc-300 rounded-md shadow-lg  p-5 w-3/4 md:w-1/2 lg:w-1/2 xl:w-1/2  h-1/2' >
-    <p className='text-zinc-700 text-center text-xl '>Add your work so that every one can see your work</p>
+    <div className='bg-slate-300 h-screen flex justify-center items-center ' >
+    <div  className=' bg-slate-200 rounded-md shadow-lg  p-5 w-3/4 md:w-1/2 lg:w-1/2 xl:w-1/2  h-1/2' >
+    <p className=' text-center text-xl '>Add your work so that every one can see your work</p>
     <span className='flex justify-center items-center w-full h-full  '>
-    <ul className='flex'>
+    <ul className='md:flex lg:flex xl:flex '>
         <li>
        
           <a
             onClick={() => navigate("/createpost")}
-            className="border-2 border-blue-700 text-blue-700 bg-blue-200  hover:rounded-lg m-5 hover:bg-blue-400 p-3 rounded-md  "
+            className="border-2 text-white bg-black hover:rounded-lg m-5 hover:bg-slate-800 p-3 rounded-md  "
           >
             Add Post{" "}
           </a>
     
       
-        </li>
+        </li><br /><br />
         <li>
         <a
             onClick={() => navigate("/createvideopost")}
-            className="border-2 border-blue-700 text-blue-700 bg-blue-200  hover:rounded-lg m-5 hover:bg-blue-400 p-3 rounded-md  "
+            className="border-2 m-5 bg-black text-white  hover:rounded-lg m-5 hover:bg-slate-800 p-3 rounded-md  "
             >
             Add Video{" "}
           </a>

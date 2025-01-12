@@ -30,6 +30,7 @@ cd back
 npm install
 npm run dev
 ```
+create uploads file inside /public/
 
 # .env for backend
 

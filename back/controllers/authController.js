@@ -4,6 +4,9 @@ const nodemailer = require("nodemailer");
 const multer = require("multer");
 const path = require("path");
 const bcrypt = require('bcrypt');
+const crypto = require("crypto");
+require("dotenv").config();
+
 
 // const storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
@@ -40,6 +43,14 @@ const generateToken = (id) => {
   });
 };
 
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.SMTP_USER, // Your Gmail address
+    pass: process.env.EMAIL_PASS, // App password (NOT your Gmail password)
+  },
+});
+
 const registerUser = async (req, res) => {
   const { name, mobile, email, password, confirmPassword, role } = req.body;
 
@@ -53,44 +64,67 @@ const registerUser = async (req, res) => {
     return res.status(400).json({ message: "User already exists" });
   }
 
+  const verificationToken = crypto.randomBytes(32).toString("hex");
+
   const user = await User.create({
     name,
     mobile,
     email,
     password,
     role: role || "user",
+    isVerified: false,
+    verificationToken,
   });
 
   if (user) {
-    const transporter = nodemailer.createTransport({
-      // host: process.env.SMTP_HOST,
-      // port: process.env.SMTP_PORT,
-      // auth: {
-      //   user: process.env.SMTP_USER,
-      //   pass: process.env.SMTP_PASS,
-      // },
-      host: "localhost",
-      port: 1025,
-      secure: false,
-    });
+    const verificationLink = `${process.env.API_URL}/api/auth/verify-email/${verificationToken}`;
 
     const message = {
-      from: `nath93266@gmail.com`,
+      from: process.env.SMTP_USER, 
       to: user.email,
-      subject: "Welcome to our App",
-      text: "Thank you for registering!",
+      subject: "Email Verification",
+      text: `Please verify your email by clicking on the following link: ${verificationLink}`,
+      html: `
+        <p>Please verify your email by clicking on the following link: 
+          <a href="${verificationLink}" target="_blank">Verify Email</a>
+        </p>
+      `,
     };
 
-    transporter.sendMail(message);
-
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      token: generateToken(user._id),
-    });
+    try {
+      await transporter.sendMail(message);
+      res.status(201).json({
+        message: "User registered. Please verify your email to log in.",
+      });
+    } catch (error) {
+      console.error("Error sending email:", error);
+      res.status(500).json({ message: "Failed to send verification email." });
+    }
   } else {
     res.status(400).json({ message: "Invalid user data" });
+  }
+};
+
+const verifyEmail = async (req, res) => {
+  const { token } = req.params;
+
+  try {
+    const user = await User.findOne({ verificationToken: token });
+
+    if (!user) {
+  
+      return res.status(400).sendFile(path.join(__dirname, "../public/email-error.html"));
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined; 
+    await user.save();
+
+  
+    return res.sendFile(path.join(__dirname, "../public/email-verified.html"));
+  } catch (error) {
+    console.error("Email verification error:", error);
+    return res.status(500).sendFile(path.join(__dirname, "../public/email-error.html"));
   }
 };
 
@@ -220,6 +254,7 @@ const resetPassword =  async (req, res) => {
 
 module.exports = {
   registerUser,
+  verifyEmail,
   loginUser,
   forgotPassword,
   resetPassword,

@@ -81,9 +81,16 @@ const Home = () => {
                   <p className="text-gray-600 p-2 ml-5">
                     <Link
                       to={postLink}
-                      className="text-blue-600 hover:underline text-lg"
-                    >
+                      className="text-blue-600 hover:underline text-lg flex"
+                    ><span >
+                      <img
+                      className="h-10 w-10 rounded-full"
+                      src={config.API_URL+`${postUser.photo}`}
+                      />
+                    </span>
+                      <span className="m-1">
                       {postUser.name}
+                      </span>
                     </Link>
                   </p>
                 ) : (
@@ -94,7 +101,8 @@ const Home = () => {
                 </h2>
                 <img
                   className="w-full h-full object-contain md:object-cover md:px-16 lg:px-16 xl:px-16"
-                  src={config.API_URL+`${postImage}`}
+                  // src={config.API_URL+`${postImage}`}
+                  src={postImage}
                   alt={postName}
                 />
               </div>
